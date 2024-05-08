@@ -1,0 +1,550 @@
+{
+  "chamber": {
+    "_id": "66397d031a109cf69d8f7ba4",
+    "name": "chamber",
+    "label": "高压氧舱",
+    "icon": "BorderlessTableOutlined",
+    "disp": true,
+    "desc": "",
+    "logTime": true,
+    "props": [
+      {
+        "name": "name",
+        "label": "舱名",
+        "ptype": "String",
+        "index": true,
+        "unique": true,
+        "visible": true,
+        "relative": {
+          "model": "",
+          "belong": false,
+          "isArray": false,
+          "_id": "66397d2d1a109cf69d8f7bfc"
+        },
+        "remark": "",
+        "dftVal": "",
+        "_id": "66397d2d1a109cf69d8f7bfb"
+      },
+      {
+        "name": "status",
+        "label": "状态",
+        "ptype": "String",
+        "index": false,
+        "unique": false,
+        "visible": true,
+        "relative": {
+          "model": "",
+          "belong": false,
+          "isArray": false,
+          "_id": "663b17cd0cebf8f77de667cc"
+        },
+        "remark": "运行中、已停止、锁定、已预约",
+        "dftVal": "",
+        "_id": "663b17cd0cebf8f77de667cb"
+      }
+    ],
+    "form": {
+      "title": "新增/编辑",
+      "width": 50,
+      "labelWidth": 4,
+      "fields": [
+        {
+          "label": "舱名",
+          "ftype": "Input",
+          "rules": [],
+          "refer": "name",
+          "_id": "66397d2d1a109cf69d8f7bfd"
+        },
+        {
+          "label": "状态",
+          "ftype": "Select",
+          "rules": [],
+          "refer": "status",
+          "_id": "66397f221a109cf69d8f7c44",
+          "extra": {
+            "options": [
+              { "label": "运行中", "value": "运行中" },
+              { "label": "已停止", "value": "已停止" },
+              { "label": "已预约", "value": "已预约" }
+            ]
+          }
+        }
+      ],
+      "_id": "66397d031a109cf69d8f7bc9"
+    },
+    "table": {
+      "title": "数据表",
+      "operaStyle": "button",
+      "size": "default",
+      "hasPages": true,
+      "refresh": [],
+      "operable": ["可增加", "可编辑", "可删除"],
+      "imExport": [],
+      "columns": [
+        { "title": "舱名", "dataIndex": "name", "group": [], "_id": "66397d2d1a109cf69d8f7bfe" },
+        { "title": "状态", "dataIndex": "status", "group": [], "_id": "66397f221a109cf69d8f7c45" }
+      ],
+      "cells": [
+        {
+          "refer": "name",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "_id": "66397d2d1a109cf69d8f7c04"
+        },
+        {
+          "refer": "status",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "_id": "66397f221a109cf69d8f7c4f"
+        }
+      ],
+      "_id": "66397d031a109cf69d8f7bcd"
+    },
+    "__v": 11
+  },
+  "order": {
+    "_id": "66397f351a109cf69d8f7cdb",
+    "name": "order",
+    "label": "预约单",
+    "icon": "BorderlessTableOutlined",
+    "disp": true,
+    "desc": "",
+    "logTime": true,
+    "props": [
+      {
+        "name": "chambers",
+        "label": "高压氧舱",
+        "ptype": "Id",
+        "index": false,
+        "unique": false,
+        "visible": true,
+        "relative": {
+          "model": "chamber",
+          "belong": true,
+          "isArray": false,
+          "_id": "6639847e1a109cf69d8f8ae8"
+        },
+        "remark": "",
+        "dftVal": "",
+        "_id": "6639847e1a109cf69d8f8ae7"
+      },
+      {
+        "name": "odDtTm",
+        "label": "预约时间",
+        "ptype": "DateTime",
+        "index": false,
+        "unique": false,
+        "visible": true,
+        "relative": {
+          "model": "",
+          "belong": false,
+          "isArray": false,
+          "_id": "6639847e1a109cf69d8f8aea"
+        },
+        "remark": "",
+        "dftVal": "2024-05-07T01:10:47.920Z",
+        "_id": "6639847e1a109cf69d8f8ae9"
+      },
+      {
+        "name": "duration",
+        "label": "使用时长",
+        "ptype": "Number",
+        "index": false,
+        "unique": false,
+        "visible": true,
+        "relative": {
+          "model": "",
+          "belong": false,
+          "isArray": false,
+          "_id": "6639847e1a109cf69d8f8aec"
+        },
+        "remark": "单位分钟",
+        "dftVal": 0,
+        "_id": "6639847e1a109cf69d8f8aeb"
+      },
+      {
+        "name": "users",
+        "label": "用户",
+        "ptype": "Id",
+        "index": false,
+        "unique": false,
+        "visible": true,
+        "relative": {
+          "model": "user",
+          "belong": true,
+          "isArray": false,
+          "_id": "6639847e1a109cf69d8f8aee"
+        },
+        "remark": "",
+        "dftVal": "",
+        "_id": "6639847e1a109cf69d8f8aed"
+      }
+    ],
+    "form": {
+      "title": "新增/编辑",
+      "width": 50,
+      "labelWidth": 4,
+      "labelAlign": "right",
+      "fields": [
+        {
+          "label": "高压氧舱",
+          "desc": "",
+          "ftype": "Select",
+          "rules": [],
+          "refer": "chambers",
+          "placeholder": "",
+          "extra": {},
+          "_id": "6639847e1a109cf69d8f8af0"
+        },
+        {
+          "label": "预约时间",
+          "desc": "",
+          "ftype": "DateTime",
+          "rules": [],
+          "refer": "odDtTm",
+          "placeholder": "",
+          "extra": {},
+          "_id": "6639847e1a109cf69d8f8af1"
+        },
+        {
+          "label": "使用时长",
+          "desc": "",
+          "ftype": "Number",
+          "rules": [],
+          "refer": "duration",
+          "placeholder": "",
+          "extra": {},
+          "_id": "6639847e1a109cf69d8f8af2"
+        },
+        {
+          "label": "用户",
+          "desc": "",
+          "ftype": "Select",
+          "rules": [],
+          "refer": "users",
+          "placeholder": "",
+          "extra": {},
+          "_id": "6639847e1a109cf69d8f8af3"
+        }
+      ],
+      "_id": "6639847e1a109cf69d8f8aef"
+    },
+    "table": {
+      "title": "数据表",
+      "desc": "",
+      "operaStyle": "button",
+      "size": "default",
+      "hasPages": true,
+      "maxPerPgs": 10,
+      "refresh": [],
+      "operable": ["可增加", "可编辑", "可删除"],
+      "expandURL": "",
+      "expHeight": -1,
+      "colDspable": false,
+      "imExport": [],
+      "columns": [
+        {
+          "title": "高压氧舱",
+          "dataIndex": "chambers",
+          "group": [],
+          "align": "left",
+          "searchable": false,
+          "filterable": false,
+          "notDisplay": false,
+          "_id": "6639847e1a109cf69d8f8af5"
+        },
+        {
+          "title": "预约时间",
+          "dataIndex": "odDtTm",
+          "group": [],
+          "align": "left",
+          "searchable": false,
+          "filterable": false,
+          "notDisplay": false,
+          "_id": "6639847e1a109cf69d8f8af6"
+        },
+        {
+          "title": "使用时长",
+          "dataIndex": "duration",
+          "group": [],
+          "align": "left",
+          "searchable": false,
+          "filterable": false,
+          "notDisplay": false,
+          "_id": "6639847e1a109cf69d8f8af7"
+        },
+        {
+          "title": "用户",
+          "dataIndex": "users",
+          "group": [],
+          "align": "left",
+          "searchable": false,
+          "filterable": false,
+          "notDisplay": false,
+          "_id": "6639847e1a109cf69d8f8af8"
+        }
+      ],
+      "cells": [
+        {
+          "refer": "chambers",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "ctype": "",
+          "format": null,
+          "_id": "6639847e1a109cf69d8f8af9"
+        },
+        {
+          "refer": "odDtTm",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "ctype": "",
+          "format": null,
+          "_id": "6639847e1a109cf69d8f8afa"
+        },
+        {
+          "refer": "duration",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "ctype": "",
+          "format": null,
+          "_id": "6639847e1a109cf69d8f8afb"
+        },
+        {
+          "refer": "users",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "ctype": "",
+          "format": null,
+          "_id": "6639847e1a109cf69d8f8afc"
+        }
+      ],
+      "_id": "6639847e1a109cf69d8f8af4"
+    },
+    "__v": 9
+  },
+  "user": {
+    "_id": "66397fe41a109cf69d8f7f50",
+    "name": "user",
+    "label": "用户",
+    "icon": "BorderlessTableOutlined",
+    "disp": true,
+    "desc": "",
+    "logTime": true,
+    "props": [
+      {
+        "name": "name",
+        "label": "名字",
+        "ptype": "String",
+        "index": true,
+        "unique": true,
+        "visible": true,
+        "relative": {
+          "model": "",
+          "belong": false,
+          "isArray": false,
+          "_id": "663981121a109cf69d8f8070"
+        },
+        "remark": "名字+身份证后6位",
+        "dftVal": "",
+        "_id": "663981121a109cf69d8f806f"
+      },
+      {
+        "name": "password",
+        "label": "登录密码",
+        "ptype": "String",
+        "index": false,
+        "unique": false,
+        "visible": true,
+        "relative": {
+          "model": "",
+          "belong": false,
+          "isArray": false,
+          "_id": "663981211a109cf69d8f8107"
+        },
+        "remark": "",
+        "dftVal": "",
+        "_id": "663981211a109cf69d8f8106"
+      },
+      {
+        "name": "phone",
+        "label": "手机",
+        "ptype": "String",
+        "index": true,
+        "unique": true,
+        "visible": true,
+        "relative": {
+          "model": "",
+          "belong": false,
+          "isArray": false,
+          "_id": "663981391a109cf69d8f8289"
+        },
+        "remark": "",
+        "dftVal": "",
+        "_id": "663981391a109cf69d8f8288"
+      },
+      {
+        "name": "role",
+        "label": "角色",
+        "ptype": "String",
+        "visible": true,
+        "remark": "权限系统标识",
+        "_id": "6639831d1a109cf69d8f8607"
+      },
+      {
+        "name": "unit",
+        "label": "单位",
+        "ptype": "String",
+        "index": false,
+        "unique": false,
+        "visible": true,
+        "relative": {
+          "model": "",
+          "belong": false,
+          "isArray": false,
+          "_id": "663b17530cebf8f77de65fac"
+        },
+        "remark": "",
+        "dftVal": "",
+        "_id": "663b17530cebf8f77de65fab"
+      },
+      {
+        "name": "nickname",
+        "label": "姓名",
+        "ptype": "String",
+        "index": true,
+        "unique": false,
+        "visible": true,
+        "relative": {
+          "model": "",
+          "belong": false,
+          "isArray": false,
+          "_id": "663b17730cebf8f77de661fc"
+        },
+        "remark": "",
+        "dftVal": "",
+        "_id": "663b17730cebf8f77de661fb"
+      }
+    ],
+    "form": {
+      "title": "新增/编辑",
+      "width": 50,
+      "labelWidth": 6,
+      "fields": [
+        {
+          "label": "登录名",
+          "ftype": "Input",
+          "rules": [],
+          "refer": "name",
+          "_id": "663981121a109cf69d8f8071"
+        },
+        {
+          "label": "登录密码",
+          "ftype": "Password",
+          "rules": [],
+          "refer": "password",
+          "_id": "663981211a109cf69d8f8108"
+        },
+        {
+          "label": "姓名",
+          "ftype": "Input",
+          "rules": [],
+          "refer": "nickname",
+          "_id": "663b176d0cebf8f77de660c7"
+        },
+        {
+          "label": "手机",
+          "ftype": "Input",
+          "rules": [],
+          "refer": "phone",
+          "_id": "663981301a109cf69d8f81bb"
+        },
+        {
+          "label": "单位",
+          "ftype": "Select",
+          "rules": [],
+          "refer": "unit",
+          "_id": "663b17530cebf8f77de65fad"
+        }
+      ],
+      "_id": "66397fe41a109cf69d8f7f75"
+    },
+    "table": {
+      "title": "数据表",
+      "operaStyle": "button",
+      "size": "default",
+      "hasPages": true,
+      "refresh": [],
+      "operable": ["可增加", "可编辑", "可删除"],
+      "imExport": [],
+      "columns": [
+        { "title": "名字", "dataIndex": "name", "group": [], "_id": "663981121a109cf69d8f8072" },
+        {
+          "title": "登录密码",
+          "dataIndex": "password",
+          "notDisplay": true,
+          "group": [],
+          "_id": "663981211a109cf69d8f8109"
+        },
+        { "title": "手机", "dataIndex": "phone", "group": [], "_id": "663981301a109cf69d8f81bc" },
+        { "title": "单位", "dataIndex": "unit", "group": [], "_id": "663b17530cebf8f77de65fae" },
+        { "title": "姓名", "dataIndex": "nickname", "group": [], "_id": "663b176d0cebf8f77de660c8" }
+      ],
+      "cells": [
+        {
+          "refer": "name",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "_id": "663981121a109cf69d8f8078"
+        },
+        {
+          "refer": "password",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "_id": "663981211a109cf69d8f8113"
+        },
+        {
+          "refer": "phone",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "_id": "663981301a109cf69d8f81ca"
+        },
+        {
+          "refer": "unit",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "_id": "663b17530cebf8f77de65fc1"
+        },
+        {
+          "refer": "nickname",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "_id": "663b176d0cebf8f77de660df"
+        }
+      ],
+      "_id": "66397fe41a109cf69d8f7f79"
+    },
+    "__v": 20
+  }
+}
