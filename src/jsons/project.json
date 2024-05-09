@@ -1,1 +1,304 @@
-{"_id":"66397ce01a109cf69d8f785a","name":"chamber_order_sys","desc":"高压氧舱预约系统","port":8580,"volumes":[],"thread":569,"database":{"_id":"66397cad1a109cf69d8f7534","name":"chamber_order_sys","dbtype":"mysql","host":"mysql","port":3306,"db":"chamber_order_sys","username":"root","password":"12345","__v":0},"dropDbs":true,"commands":"","https":false,"independ":false,"envVars":[],"expPorts":[],"services":[{"_id":"66397d031a109cf69d8f7baf","name":"chamber","emit":"api","model":"66397d031a109cf69d8f7ba4","method":"POST","path":"/mdl/v1/chamber","needRet":true,"stcVars":[],"__v":0},{"_id":"66397d031a109cf69d8f7bb5","name":"chamber","emit":"api","model":"66397d031a109cf69d8f7ba4","method":"DELETE","path":"/mdl/v1/chamber/:index","needRet":true,"stcVars":[],"__v":0},{"_id":"66397d031a109cf69d8f7bbb","name":"chamber","emit":"api","model":"66397d031a109cf69d8f7ba4","method":"PUT","path":"/mdl/v1/chamber/:index","needRet":true,"stcVars":[],"__v":0},{"_id":"66397d031a109cf69d8f7bc1","name":"chamber","emit":"api","model":"66397d031a109cf69d8f7ba4","method":"GET","path":"/mdl/v1/chamber/:index","needRet":true,"stcVars":[],"__v":0},{"_id":"66397f351a109cf69d8f7ce6","name":"order","emit":"api","model":"66397f351a109cf69d8f7cdb","method":"POST","path":"/mdl/v1/order","needRet":true,"stcVars":[],"__v":0},{"_id":"66397f351a109cf69d8f7cec","name":"order","emit":"api","model":"66397f351a109cf69d8f7cdb","method":"DELETE","path":"/mdl/v1/order/:index","needRet":true,"stcVars":[],"__v":0},{"_id":"66397f351a109cf69d8f7cf2","name":"order","emit":"api","model":"66397f351a109cf69d8f7cdb","method":"PUT","path":"/mdl/v1/order/:index","needRet":true,"stcVars":[],"__v":0},{"_id":"66397f351a109cf69d8f7cf8","name":"order","emit":"api","model":"66397f351a109cf69d8f7cdb","method":"GET","path":"/mdl/v1/order/:index","needRet":true,"stcVars":[],"__v":0},{"_id":"66397fe41a109cf69d8f7f5b","name":"user","emit":"api","model":"66397fe41a109cf69d8f7f50","method":"POST","path":"/mdl/v1/user","needRet":true,"stcVars":[],"__v":0},{"_id":"66397fe41a109cf69d8f7f61","name":"user","emit":"api","model":"66397fe41a109cf69d8f7f50","method":"DELETE","path":"/mdl/v1/user/:index","needRet":true,"stcVars":[],"__v":0},{"_id":"66397fe41a109cf69d8f7f67","name":"user","emit":"api","model":"66397fe41a109cf69d8f7f50","method":"PUT","path":"/mdl/v1/user/:index","needRet":true,"stcVars":[],"__v":0},{"_id":"66397fe41a109cf69d8f7f6d","name":"user","emit":"api","model":"66397fe41a109cf69d8f7f50","method":"GET","path":"/mdl/v1/user/:index","needRet":true,"stcVars":[],"__v":0},{"_id":"6639831d1a109cf69d8f8609","name":"auth","interface":"sign","emit":"api","method":"POST","path":"/api/v1/user/sign","needRet":true,"stcVars":[],"__v":0,"flow":"6639832b1a109cf69d8f876a"},{"_id":"6639831d1a109cf69d8f860f","name":"auth","interface":"verify","emit":"api","method":"POST","path":"/api/v1/user/verify","needRet":true,"stcVars":[],"__v":0},{"_id":"6639831d1a109cf69d8f8615","name":"auth","interface":"verifyDeep","emit":"api","method":"POST","path":"/api/v1/user/verify/deep","needRet":true,"stcVars":[],"__v":0},{"_id":"6639847e1a109cf69d8f8afe","emit":"api","model":"66397f351a109cf69d8f7cdb","method":"LINK","path":"/mdl/v1/order/:index","stcVars":[],"__v":0}],"typos":[],"auth":{"model":"66397fe41a109cf69d8f7f50","skips":["/api/v1/user/sign","/api/v1/user/verify","/api/v1/user/verify/deep"],"props":[{"key":"0c88ca06-3f52-4130-9278-b4a8d0c2215a","name":"name","alg":"none"},{"key":"5c79e8a7-ce74-406e-a1cc-dc7631e93788","name":"password","alg":"sha256"}],"roles":[{"name":"guest","extend":"","rules":[{"method":"POST","path":"/mdl/v1/user","value":"/","idens":[],"action":"","remark":"","_id":"6639831d1a109cf69d8f8623"}],"_id":"6639831d1a109cf69d8f8622"},{"name":"admin","extend":"","rules":[{"method":"ALL","path":"/mdl/v1/chamber","value":"*/*","idens":[],"action":"","remark":"","_id":"663b1b150cebf8f77de67ace"},{"method":"ALL","path":"/mdl/v1/order","value":"*/*","idens":[],"action":"","remark":"","_id":"663b1b150cebf8f77de67acf"},{"method":"ALL","path":"/mdl/v1/user","value":"*/*","idens":[],"action":"","remark":"","_id":"663b1b150cebf8f77de67ad0"}],"_id":"663ad4c70cebf8f77de64413"},{"name":"user","extend":"","rules":[{"method":"POST","path":"/mdl/v1/order","value":"/","idens":[],"action":"","remark":"","_id":"663b1b370cebf8f77de67c0b"},{"method":"GET","path":"/mdl/v1/order","value":"s","idens":[],"action":"","remark":"","_id":"663b1b430cebf8f77de67ca5"}],"_id":"663b1b1c0cebf8f77de67b57"}],"apis":[],"_id":"66397ce01a109cf69d8f785b"},"middle":{"lclDep":true,"prefix":"","login":{"width":30,"_id":"663983401a109cf69d8f8879"},"navigate":{"path":"/home","theme":"dark","logo":"","_id":"66397ce01a109cf69d8f7860"},"dashboard":{"bkgdColor":"#FFFFFF","padding":[16,16],"children":[],"_id":"66397ce01a109cf69d8f7861"},"_id":"66397ce01a109cf69d8f785e"},"logPid":627}
+{
+  "_id": "66397ce01a109cf69d8f785a",
+  "name": "chamber_order_sys",
+  "desc": "高压氧舱预约系统",
+  "port": 8580,
+  "volumes": [],
+  "thread": 569,
+  "database": {
+    "_id": "66397cad1a109cf69d8f7534",
+    "name": "chamber_order_sys",
+    "dbtype": "mysql",
+    "host": "mysql",
+    "port": 3306,
+    "db": "chamber_order_sys",
+    "username": "root",
+    "password": "12345",
+    "__v": 0
+  },
+  "dropDbs": true,
+  "commands": "",
+  "https": false,
+  "independ": false,
+  "envVars": [],
+  "expPorts": [],
+  "services": [
+    {
+      "_id": "66397d031a109cf69d8f7baf",
+      "name": "chamber",
+      "emit": "api",
+      "model": "66397d031a109cf69d8f7ba4",
+      "method": "POST",
+      "path": "/mdl/v1/chamber",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "66397d031a109cf69d8f7bb5",
+      "name": "chamber",
+      "emit": "api",
+      "model": "66397d031a109cf69d8f7ba4",
+      "method": "DELETE",
+      "path": "/mdl/v1/chamber/:index",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "66397d031a109cf69d8f7bbb",
+      "name": "chamber",
+      "emit": "api",
+      "model": "66397d031a109cf69d8f7ba4",
+      "method": "PUT",
+      "path": "/mdl/v1/chamber/:index",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "66397d031a109cf69d8f7bc1",
+      "name": "chamber",
+      "emit": "api",
+      "model": "66397d031a109cf69d8f7ba4",
+      "method": "GET",
+      "path": "/mdl/v1/chamber/:index",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "66397f351a109cf69d8f7ce6",
+      "name": "order",
+      "emit": "api",
+      "model": "66397f351a109cf69d8f7cdb",
+      "method": "POST",
+      "path": "/mdl/v1/order",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "66397f351a109cf69d8f7cec",
+      "name": "order",
+      "emit": "api",
+      "model": "66397f351a109cf69d8f7cdb",
+      "method": "DELETE",
+      "path": "/mdl/v1/order/:index",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "66397f351a109cf69d8f7cf2",
+      "name": "order",
+      "emit": "api",
+      "model": "66397f351a109cf69d8f7cdb",
+      "method": "PUT",
+      "path": "/mdl/v1/order/:index",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "66397f351a109cf69d8f7cf8",
+      "name": "order",
+      "emit": "api",
+      "model": "66397f351a109cf69d8f7cdb",
+      "method": "GET",
+      "path": "/mdl/v1/order/:index",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "66397fe41a109cf69d8f7f5b",
+      "name": "user",
+      "emit": "api",
+      "model": "66397fe41a109cf69d8f7f50",
+      "method": "POST",
+      "path": "/mdl/v1/user",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "66397fe41a109cf69d8f7f61",
+      "name": "user",
+      "emit": "api",
+      "model": "66397fe41a109cf69d8f7f50",
+      "method": "DELETE",
+      "path": "/mdl/v1/user/:index",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "66397fe41a109cf69d8f7f67",
+      "name": "user",
+      "emit": "api",
+      "model": "66397fe41a109cf69d8f7f50",
+      "method": "PUT",
+      "path": "/mdl/v1/user/:index",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "66397fe41a109cf69d8f7f6d",
+      "name": "user",
+      "emit": "api",
+      "model": "66397fe41a109cf69d8f7f50",
+      "method": "GET",
+      "path": "/mdl/v1/user/:index",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "6639831d1a109cf69d8f8609",
+      "name": "auth",
+      "interface": "sign",
+      "emit": "api",
+      "method": "POST",
+      "path": "/api/v1/user/sign",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0,
+      "flow": "6639832b1a109cf69d8f876a"
+    },
+    {
+      "_id": "6639831d1a109cf69d8f860f",
+      "name": "auth",
+      "interface": "verify",
+      "emit": "api",
+      "method": "POST",
+      "path": "/api/v1/user/verify",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "6639831d1a109cf69d8f8615",
+      "name": "auth",
+      "interface": "verifyDeep",
+      "emit": "api",
+      "method": "POST",
+      "path": "/api/v1/user/verify/deep",
+      "needRet": true,
+      "stcVars": [],
+      "__v": 0
+    },
+    {
+      "_id": "6639847e1a109cf69d8f8afe",
+      "emit": "api",
+      "model": "66397f351a109cf69d8f7cdb",
+      "method": "LINK",
+      "path": "/mdl/v1/order/:index",
+      "stcVars": [],
+      "__v": 0
+    }
+  ],
+  "typos": [],
+  "auth": {
+    "model": "66397fe41a109cf69d8f7f50",
+    "skips": ["/api/v1/user/sign", "/api/v1/user/verify", "/api/v1/user/verify/deep"],
+    "props": [
+      { "key": "0c88ca06-3f52-4130-9278-b4a8d0c2215a", "name": "name", "alg": "none" },
+      { "key": "5c79e8a7-ce74-406e-a1cc-dc7631e93788", "name": "password", "alg": "sha256" }
+    ],
+    "roles": [
+      {
+        "name": "guest",
+        "extend": "",
+        "rules": [
+          {
+            "method": "POST",
+            "path": "/mdl/v1/user",
+            "value": "/",
+            "idens": [],
+            "action": "",
+            "remark": "",
+            "_id": "6639831d1a109cf69d8f8623"
+          }
+        ],
+        "_id": "6639831d1a109cf69d8f8622"
+      },
+      {
+        "name": "admin",
+        "extend": "",
+        "rules": [
+          {
+            "method": "ALL",
+            "path": "/mdl/v1/chamber",
+            "value": "*/*",
+            "idens": [],
+            "action": "",
+            "remark": "",
+            "_id": "663b1b150cebf8f77de67ace"
+          },
+          {
+            "method": "ALL",
+            "path": "/mdl/v1/order",
+            "value": "*/*",
+            "idens": [],
+            "action": "",
+            "remark": "",
+            "_id": "663b1b150cebf8f77de67acf"
+          },
+          {
+            "method": "ALL",
+            "path": "/mdl/v1/user",
+            "value": "*/*",
+            "idens": [],
+            "action": "",
+            "remark": "",
+            "_id": "663b1b150cebf8f77de67ad0"
+          }
+        ],
+        "_id": "663ad4c70cebf8f77de64413"
+      },
+      {
+        "name": "user",
+        "extend": "",
+        "rules": [
+          {
+            "method": "POST",
+            "path": "/mdl/v1/order",
+            "value": "/",
+            "idens": [],
+            "action": "",
+            "remark": "",
+            "_id": "663b1b370cebf8f77de67c0b"
+          },
+          {
+            "method": "GET",
+            "path": "/mdl/v1/order",
+            "value": "s",
+            "idens": [],
+            "action": "",
+            "remark": "",
+            "_id": "663b1b430cebf8f77de67ca5"
+          }
+        ],
+        "_id": "663b1b1c0cebf8f77de67b57"
+      }
+    ],
+    "apis": [],
+    "_id": "66397ce01a109cf69d8f785b"
+  },
+  "middle": {
+    "lclDep": true,
+    "prefix": "",
+    "login": { "width": 50, "registerable": true, "_id": "663983401a109cf69d8f8879" },
+    "navigate": { "path": "/home", "theme": "dark", "logo": "", "_id": "66397ce01a109cf69d8f7860" },
+    "dashboard": {
+      "bkgdColor": "#FFFFFF",
+      "padding": [16, 16],
+      "children": [],
+      "_id": "66397ce01a109cf69d8f7861"
+    },
+    "_id": "66397ce01a109cf69d8f785e"
+  },
+  "logPid": 627
+}

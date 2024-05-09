@@ -77,9 +77,11 @@ router.beforeEach(async (to, _from, next) => {
           headers: { authorization: 'Bearer ' + (localStorage.getItem('token') || '') }
         })
       )
-      if (result.error) {
-        throw new Error(result.data.error)
+      if (result.error || !result.payload) {
+        throw new Error(result.error || '没有载荷！')
       }
+      const payload = result.payload
+      console.log(payload)
       next()
     } catch (e) {
       next({

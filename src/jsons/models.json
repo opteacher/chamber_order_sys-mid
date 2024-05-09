@@ -348,17 +348,17 @@
         "label": "名字",
         "ptype": "String",
         "index": true,
-        "unique": true,
+        "unique": false,
         "visible": true,
         "relative": {
           "model": "",
           "belong": false,
           "isArray": false,
-          "_id": "663981121a109cf69d8f8070"
+          "_id": "663c8b8c3695cbfb11a20d8b"
         },
-        "remark": "名字+身份证后6位",
+        "remark": "",
         "dftVal": "",
-        "_id": "663981121a109cf69d8f806f"
+        "_id": "663c8b8c3695cbfb11a20d8a"
       },
       {
         "name": "password",
@@ -418,23 +418,6 @@
         "remark": "",
         "dftVal": "",
         "_id": "663b17530cebf8f77de65fab"
-      },
-      {
-        "name": "nickname",
-        "label": "姓名",
-        "ptype": "String",
-        "index": true,
-        "unique": false,
-        "visible": true,
-        "relative": {
-          "model": "",
-          "belong": false,
-          "isArray": false,
-          "_id": "663b17730cebf8f77de661fc"
-        },
-        "remark": "",
-        "dftVal": "",
-        "_id": "663b17730cebf8f77de661fb"
       }
     ],
     "form": {
@@ -447,7 +430,9 @@
           "ftype": "Input",
           "rules": [],
           "refer": "name",
-          "_id": "663981121a109cf69d8f8071"
+          "_id": "663981121a109cf69d8f8071",
+          "desc": "",
+          "placeholder": ""
         },
         {
           "label": "登录密码",
@@ -455,13 +440,6 @@
           "rules": [],
           "refer": "password",
           "_id": "663981211a109cf69d8f8108"
-        },
-        {
-          "label": "姓名",
-          "ftype": "Input",
-          "rules": [],
-          "refer": "nickname",
-          "_id": "663b176d0cebf8f77de660c7"
         },
         {
           "label": "手机",
@@ -489,7 +467,12 @@
       "operable": ["可增加", "可编辑", "可删除"],
       "imExport": [],
       "columns": [
-        { "title": "名字", "dataIndex": "name", "group": [], "_id": "663981121a109cf69d8f8072" },
+        {
+          "title": "名字",
+          "dataIndex": "name",
+          "group": [],
+          "_id": "663981121a109cf69d8f8072"
+        },
         {
           "title": "登录密码",
           "dataIndex": "password",
@@ -497,9 +480,18 @@
           "group": [],
           "_id": "663981211a109cf69d8f8109"
         },
-        { "title": "手机", "dataIndex": "phone", "group": [], "_id": "663981301a109cf69d8f81bc" },
-        { "title": "单位", "dataIndex": "unit", "group": [], "_id": "663b17530cebf8f77de65fae" },
-        { "title": "姓名", "dataIndex": "nickname", "group": [], "_id": "663b176d0cebf8f77de660c8" }
+        {
+          "title": "手机",
+          "dataIndex": "phone",
+          "group": [],
+          "_id": "663981301a109cf69d8f81bc"
+        },
+        {
+          "title": "单位",
+          "dataIndex": "unit",
+          "group": [],
+          "_id": "663b17530cebf8f77de65fae"
+        }
       ],
       "cells": [
         {
@@ -533,18 +525,10 @@
           "prefix": "",
           "suffix": "",
           "_id": "663b17530cebf8f77de65fc1"
-        },
-        {
-          "refer": "nickname",
-          "cdCell": {},
-          "color": "#000000",
-          "prefix": "",
-          "suffix": "",
-          "_id": "663b176d0cebf8f77de660df"
         }
       ],
       "_id": "66397fe41a109cf69d8f7f79"
     },
-    "__v": 20
+    "__v": 21
   }
 }

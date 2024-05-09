@@ -32,7 +32,6 @@
           </a-menu-item>
           <a-menu-item-group key="user">
             <template #title>用户页面</template>
-            <a-menu-item key="user_login">用户登录</a-menu-item>
             <a-menu-item key="user_profile">个人配置</a-menu-item>
             <a-menu-item key="user_order">预约氧舱</a-menu-item>
           </a-menu-item-group>

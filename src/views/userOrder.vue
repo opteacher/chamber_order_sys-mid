@@ -6,7 +6,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import project from '@/jsons/project.json'
 
+const router = useRouter()
 const category = ref<'available' | 'ordered'>('available')
+
+onMounted(() => {
+  if (!localStorage.getItem('userToken')) {
+    router.replace(`/${project.name}/login`)
+  }
+})
 </script>

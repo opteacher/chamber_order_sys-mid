@@ -24,7 +24,7 @@ export default class MidLgn {
     this.align = 'center'
     this.padding = 24
     this.radius = 0
-    this.fmBkgdColor = '#EFEFEF'
+    this.fmBkgdColor = '#EFEFEFDD'
     this.registerable = false
     this.title = '登录标题'
     this.logAccount = true
@@ -41,7 +41,7 @@ export default class MidLgn {
     this.align = 'center'
     this.padding = 24
     this.radius = 0
-    this.fmBkgdColor = '#EFEFEF'
+    this.fmBkgdColor = '#EFEFEFDD'
     this.registerable = false
     this.title = ''
     this.logAccount = true
