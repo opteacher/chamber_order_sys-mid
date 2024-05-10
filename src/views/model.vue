@@ -26,7 +26,7 @@
 import { watch, ref, onMounted, reactive } from 'vue'
 import MainLayout from '@/layouts/main.vue'
 import models from '@/jsons/models.json'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { TinyEmitter as Emitter } from 'tiny-emitter'
 import { createByFields } from '@lib/types/mapper'
 import api from '@/apis/model'

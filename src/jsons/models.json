@@ -36,11 +36,11 @@
           "model": "",
           "belong": false,
           "isArray": false,
-          "_id": "663b17cd0cebf8f77de667cc"
+          "_id": "663dddf3c510aebb490e0b81"
         },
-        "remark": "运行中、已停止、锁定、已预约",
+        "remark": "运行中、已停止、锁定、已预约、异常",
         "dftVal": "",
-        "_id": "663b17cd0cebf8f77de667cb"
+        "_id": "663dddf3c510aebb490e0b80"
       }
     ],
     "form": {
@@ -63,9 +63,26 @@
           "_id": "66397f221a109cf69d8f7c44",
           "extra": {
             "options": [
-              { "label": "运行中", "value": "运行中" },
-              { "label": "已停止", "value": "已停止" },
-              { "label": "已预约", "value": "已预约" }
+              {
+                "label": "运行中",
+                "value": "运行中"
+              },
+              {
+                "label": "已停止",
+                "value": "已停止"
+              },
+              {
+                "label": "已预约",
+                "value": "已预约"
+              },
+              {
+                "label": "锁定",
+                "value": "锁定"
+              },
+              {
+                "label": "异常",
+                "value": "异常"
+              }
             ]
           }
         }
@@ -81,8 +98,18 @@
       "operable": ["可增加", "可编辑", "可删除"],
       "imExport": [],
       "columns": [
-        { "title": "舱名", "dataIndex": "name", "group": [], "_id": "66397d2d1a109cf69d8f7bfe" },
-        { "title": "状态", "dataIndex": "status", "group": [], "_id": "66397f221a109cf69d8f7c45" }
+        {
+          "title": "舱名",
+          "dataIndex": "name",
+          "group": [],
+          "_id": "66397d2d1a109cf69d8f7bfe"
+        },
+        {
+          "title": "状态",
+          "dataIndex": "status",
+          "group": [],
+          "_id": "66397f221a109cf69d8f7c45"
+        }
       ],
       "cells": [
         {
@@ -104,7 +131,7 @@
       ],
       "_id": "66397d031a109cf69d8f7bcd"
     },
-    "__v": 11
+    "__v": 13
   },
   "order": {
     "_id": "66397f351a109cf69d8f7cdb",
@@ -182,6 +209,23 @@
         "remark": "",
         "dftVal": "",
         "_id": "6639847e1a109cf69d8f8aed"
+      },
+      {
+        "name": "status",
+        "label": "订单状态",
+        "ptype": "String",
+        "index": false,
+        "unique": false,
+        "visible": true,
+        "relative": {
+          "model": "",
+          "belong": false,
+          "isArray": false,
+          "_id": "663dd380c510aebb490dfcf9"
+        },
+        "remark": "未到时、已过期、进行中、已失效",
+        "dftVal": "",
+        "_id": "663dd380c510aebb490dfcf8"
       }
     ],
     "form": {
@@ -229,6 +273,33 @@
           "placeholder": "",
           "extra": {},
           "_id": "6639847e1a109cf69d8f8af3"
+        },
+        {
+          "label": "订单状态",
+          "ftype": "Select",
+          "rules": [],
+          "refer": "status",
+          "_id": "663dd380c510aebb490dfcfa",
+          "extra": {
+            "options": [
+              {
+                "label": "未到时",
+                "value": "未到时"
+              },
+              {
+                "label": "已过期",
+                "value": "已过期"
+              },
+              {
+                "label": "进行中",
+                "value": "进行中"
+              },
+              {
+                "label": "已失效",
+                "value": "已失效"
+              }
+            ]
+          }
         }
       ],
       "_id": "6639847e1a109cf69d8f8aef"
@@ -286,6 +357,12 @@
           "filterable": false,
           "notDisplay": false,
           "_id": "6639847e1a109cf69d8f8af8"
+        },
+        {
+          "title": "订单状态",
+          "dataIndex": "status",
+          "group": [],
+          "_id": "663dd380c510aebb490dfcfb"
         }
       ],
       "cells": [
@@ -328,11 +405,19 @@
           "ctype": "",
           "format": null,
           "_id": "6639847e1a109cf69d8f8afc"
+        },
+        {
+          "refer": "status",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "_id": "663dd380c510aebb490dfd15"
         }
       ],
       "_id": "6639847e1a109cf69d8f8af4"
     },
-    "__v": 9
+    "__v": 20
   },
   "user": {
     "_id": "66397fe41a109cf69d8f7f50",

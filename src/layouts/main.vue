@@ -27,14 +27,9 @@
           @click="onMuItmSelect"
         >
           <a-menu-item key="home">首页</a-menu-item>
-          <a-menu-item v-for="model in sdNavMdls" :key="model.name">
+          <a-menu-item v-for="model in sdNavMdls" :key="`model/${model.name}`">
             {{ model.label }}
           </a-menu-item>
-          <a-menu-item-group key="user">
-            <template #title>用户页面</template>
-            <a-menu-item key="user_profile">个人配置</a-menu-item>
-            <a-menu-item key="user_order">预约氧舱</a-menu-item>
-          </a-menu-item-group>
         </a-menu>
       </a-layout-sider>
       <a-layout>
@@ -55,6 +50,7 @@ import models from '@/jsons/models.json'
 import { useRoute } from 'vue-router'
 import { UserOutlined } from '@ant-design/icons-vue'
 import api from '@/apis/model'
+import { rmvStartsOf } from '@lib/utils'
 
 const route = useRoute()
 const sdNavMdls = ref<{ name: string; label: string }[]>([])
@@ -79,8 +75,13 @@ onMounted(async () => {
 router.beforeEach(to => actSideKeys(to.path))
 
 function actSideKeys(path: string) {
-  const paths = path.split('/')
-  sideKeys.splice(0, sideKeys.length, ...paths)
+  const fixPath = rmvStartsOf(path, `/${project.name}/`)
+  const paths = fixPath.split('/')
+  if (fixPath.startsWith('model/')) {
+    sideKeys.splice(0, sideKeys.length, fixPath)
+  } else {
+    sideKeys.splice(0, sideKeys.length, ...paths)
+  }
   if (paths.length) {
     openKeys.splice(0, openKeys.length, ...paths.slice(0, -1))
   }

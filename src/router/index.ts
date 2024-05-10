@@ -21,10 +21,11 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: `/${project.name}/home`,
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: { reqLogin: true }
   },
   {
-    path: `/${project.name}/:mname`,
+    path: `/${project.name}/model/:mname`,
     name: 'model',
     component: Model,
     meta: { reqLogin: true }
@@ -42,23 +43,11 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/chamber_order_sys/user_order',
-    name: 'order',
-    component: user,
-    meta: { reqLogin: true }
-  },
-  {
-    path: '/chamber_order_sys/user_profile',
-    name: 'profile',
-    component: user,
-    meta: { reqLogin: true }
-  },
-  {
-    path: '/chamber_order_sys/userOrder',
     name: 'userOrder',
     component: userOrder
   },
   {
-    path: '/chamber_order_sys/userProfile',
+    path: '/chamber_order_sys/user_profile',
     name: 'userProfile',
     component: userProfile
   },
@@ -78,11 +67,14 @@ router.beforeEach(async (to, _from, next) => {
         })
       )
       if (result.error || !result.payload) {
-        throw new Error(result.error || '没有载荷！')
+        throw new Error(result.error || '鉴权失败，没有载荷！')
       }
       const payload = result.payload
-      console.log(payload)
-      next()
+      if (payload.roles.includes('admin')) {
+        next()
+      } else {
+        next('/chamber_order_sys/user_order')
+      }
     } catch (e) {
       next({
         path: '/chamber_order_sys/login',

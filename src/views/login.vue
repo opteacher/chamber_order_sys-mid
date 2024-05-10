@@ -52,11 +52,11 @@
           v-if="regSucceed"
           status="success"
           title="用户注册成功！"
-          sub-title="现可以预约氧舱！"
+          sub-title="现在可以预约氧舱！"
         >
           <template #extra>
             <a-button type="primary" @click="() => onLogin(regFmState)">前往用户首页</a-button>
-            <a-button @click="() => router.replace(`/${project.name}/login`)">
+            <a-button @click="onToLoginClick">
               返回登录页面
             </a-button>
           </template>
@@ -133,21 +133,29 @@ onMounted(async () => {
   if (localStorage.getItem('token')) {
     const result = await api.verifyDeep()
     console.log(result)
-    if (!result.error) {
+    if (result.error || !result.message) {
+      notification.error({
+        message: result.error || '未知错误，没有消息分量！'
+      })
+      return
+    }
+    if (result.message.endsWith('admin')) {
       router.replace(`/${project.name}/`)
+    } else {
+      router.replace(`/${project.name}/user_order`)
     }
   }
 })
 
 async function onLogin(values: any) {
   const result = await api.login(values)
-  if (result.token) {
+  console.log(result.record.role)
+  if (result.token && result.record) {
+    localStorage.setItem('token', result.token)
     if (result.record.role === 'admin') {
-      localStorage.setItem('token', result.token)
-      router.push(`/${project.name}/`)
+      router.replace(`/${project.name}/`)
     } else {
-      localStorage.setItem('userToken', result.token)
-      router.push(`/${project.name}/userOrder`)
+      router.replace(`/${project.name}/user_order`)
     }
   }
 }
@@ -158,7 +166,11 @@ async function onRegist(value: any) {
     })
     return
   }
-  const result = await mdlAPI.add(authMdl?.name as string, { ...value, role: 'user' })
+  const result = await mdlAPI.add(
+    authMdl?.name as string,
+    { ...value, role: 'user' },
+    { type: 'api' }
+  )
   if (result.error) {
     notification.error({
       message: '注册用户失败：' + result.error
@@ -170,5 +182,10 @@ async function onRegist(value: any) {
 }
 function switchLgnMod() {
   lgnMod.value = !lgnMod.value
+}
+function onToLoginClick() {
+  router.replace(`/${project.name}/login`)
+  lgnMod.value = true
+  regSucceed.value = false
 }
 </script>
