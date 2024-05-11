@@ -7,7 +7,7 @@ export type OrderStatus = '未到时' | '已过期' | '进行中' | '已失效'
 
 export default class Order {
   key: number
-  chamber: Chamber | string
+  chambers: Chamber | string
   odDtTm: Dayjs
   duration: number
   users: User | string
@@ -15,8 +15,8 @@ export default class Order {
 
   constructor() {
     this.key = 0
-    this.chamber = ''
-    this.odDtTm = dayjs(null)
+    this.chambers = ''
+    this.odDtTm = dayjs()
     this.duration = 20
     this.users = ''
     this.status = '未到时'
@@ -24,8 +24,8 @@ export default class Order {
 
   reset() {
     this.key = 0
-    this.chamber = ''
-    this.odDtTm = dayjs(null)
+    this.chambers = ''
+    this.odDtTm = dayjs()
     this.duration = 20
     this.users = ''
     this.status = '未到时'
@@ -34,7 +34,7 @@ export default class Order {
   static copy(src: any, tgt?: Order, force = false): Order {
     return gnlCpy(Order, src, tgt, {
       force,
-      cpyMapper: { chamber: Chamber.copy, users: User.copy }
+      cpyMapper: { chambers: Chamber.copy, users: User.copy }
     })
   }
 }
