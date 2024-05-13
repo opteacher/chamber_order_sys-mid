@@ -3,38 +3,47 @@ import Chamber from './chamber'
 import User from './user'
 import { gnlCpy } from '@lib/utils'
 
-export type OrderStatus = '未到时' | '已过期' | '进行中' | '已失效'
+export const statusColor = {
+  '未到时': 'processing',
+  '已失效': 'default',
+  '已过期': 'error',
+  '进行中': 'success'
+}
+
+export type OrderStatus = keyof typeof statusColor
 
 export default class Order {
   key: number
-  chambers: Chamber | string
+  fkChamber: number
+  chamber?: Chamber
   odDtTm: Dayjs
   duration: number
-  users: User | string
+  fkUser: number
+  user?: User
   status: OrderStatus
 
   constructor() {
     this.key = 0
-    this.chambers = ''
+    this.fkChamber = 0
     this.odDtTm = dayjs()
     this.duration = 20
-    this.users = ''
+    this.fkUser = 0
     this.status = '未到时'
   }
 
   reset() {
     this.key = 0
-    this.chambers = ''
+    this.fkChamber = 0
     this.odDtTm = dayjs()
     this.duration = 20
-    this.users = ''
+    this.fkUser = 0
     this.status = '未到时'
   }
 
   static copy(src: any, tgt?: Order, force = false): Order {
     return gnlCpy(Order, src, tgt, {
       force,
-      cpyMapper: { chambers: Chamber.copy, users: User.copy }
+      cpyMapper: { chamber: Chamber.copy, user: User.copy }
     })
   }
 }

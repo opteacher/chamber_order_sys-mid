@@ -143,7 +143,7 @@
     "logTime": true,
     "props": [
       {
-        "name": "chambers",
+        "name": "fkChamber",
         "label": "高压氧舱",
         "ptype": "Id",
         "index": false,
@@ -153,11 +153,11 @@
           "model": "chamber",
           "belong": true,
           "isArray": false,
-          "_id": "6639847e1a109cf69d8f8ae8"
+          "_id": "664169630404f2e82e439f62"
         },
         "remark": "",
         "dftVal": "",
-        "_id": "6639847e1a109cf69d8f8ae7"
+        "_id": "664169630404f2e82e439f61"
       },
       {
         "name": "odDtTm",
@@ -194,7 +194,7 @@
         "_id": "6639847e1a109cf69d8f8aeb"
       },
       {
-        "name": "users",
+        "name": "fkUser",
         "label": "用户",
         "ptype": "Id",
         "index": false,
@@ -204,11 +204,11 @@
           "model": "user",
           "belong": true,
           "isArray": false,
-          "_id": "6639847e1a109cf69d8f8aee"
+          "_id": "6641696e0404f2e82e43a0ef"
         },
         "remark": "",
         "dftVal": "",
-        "_id": "6639847e1a109cf69d8f8aed"
+        "_id": "6641696e0404f2e82e43a0ee"
       },
       {
         "name": "status",
@@ -239,7 +239,7 @@
           "desc": "",
           "ftype": "Select",
           "rules": [],
-          "refer": "chambers",
+          "refer": "fkChamber",
           "placeholder": "",
           "extra": {},
           "_id": "6639847e1a109cf69d8f8af0"
@@ -269,7 +269,7 @@
           "desc": "",
           "ftype": "Select",
           "rules": [],
-          "refer": "users",
+          "refer": "fkUser",
           "placeholder": "",
           "extra": {},
           "_id": "6639847e1a109cf69d8f8af3"
@@ -320,7 +320,7 @@
       "columns": [
         {
           "title": "高压氧舱",
-          "dataIndex": "chambers",
+          "dataIndex": "fkChamber",
           "group": [],
           "align": "left",
           "searchable": false,
@@ -350,7 +350,7 @@
         },
         {
           "title": "用户",
-          "dataIndex": "users",
+          "dataIndex": "fkUser",
           "group": [],
           "align": "left",
           "searchable": false,
@@ -367,7 +367,7 @@
       ],
       "cells": [
         {
-          "refer": "chambers",
+          "refer": "fkChamber",
           "cdCell": {},
           "color": "#000000",
           "prefix": "",
@@ -397,7 +397,7 @@
           "_id": "6639847e1a109cf69d8f8afb"
         },
         {
-          "refer": "users",
+          "refer": "fkUser",
           "cdCell": {},
           "color": "#000000",
           "prefix": "",

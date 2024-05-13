@@ -4,7 +4,7 @@
       <a-divider class="border-slate-300">
         <a-radio-group v-model:value="category" button-style="solid" @change="refresh">
           <a-radio-button value="available">可用氧舱</a-radio-button>
-          <a-badge count="5">
+          <a-badge :count="myOrders.filter(order => order.status !== '已失效').length">
             <a-radio-button class="border-l-0 rounded-l-none rounded-r-md" value="ordered">
               我的预约
             </a-radio-button>
@@ -24,7 +24,9 @@
               <a-list-item-meta>
                 <template #title>
                   {{ item.name }}&nbsp;
-                  <a-tag :color="chamberStatColor(item.status)">{{ item.status }}</a-tag>
+                  <a-tag :color="chamberStatColor[item.status as ChamberStatus]">
+                    {{ item.status }}
+                  </a-tag>
                 </template>
               </a-list-item-meta>
               <template #actions>
@@ -46,7 +48,33 @@
           :loading="loading"
           item-layout="horizontal"
           :data-source="myOrders"
-        ></a-list>
+        >
+          <template #renderItem="{ item }">
+            <a-list-item class="hover:bg-slate-200">
+              <a-list-item-meta>
+                <template #title>
+                  {{ item.chamber.name }}&nbsp;
+                  <a-tag :color="orderStatColor[item.status as OrderStatus]">
+                    {{ item.status }}
+                  </a-tag>
+                </template>
+                <template #description>
+                  {{ item.odDtTm.format('YYYY/MM/DD HH:mm:ss') }}&nbsp;{{ item.duration }}分钟
+                </template>
+              </a-list-item-meta>
+              <template #actions>
+                <a-button
+                  danger
+                  ghost
+                  :disabled="item.status !== '未到时'"
+                  @click="() => onCancelOrder(item)"
+                >
+                  取消
+                </a-button>
+              </template>
+            </a-list-item>
+          </template>
+        </a-list>
       </div>
       <FormDialog
         title="确定预约该氧舱吗？"
@@ -62,16 +90,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { createVNode, onMounted, reactive, ref } from 'vue'
 import UserLayout from '@/layouts/user.vue'
-import Chamber, { ChamberStatus, statusColor } from '@/types/chamber'
+import Chamber, { ChamberStatus, statusColor as chamberStatColor } from '@/types/chamber'
 import api from '@/apis/model'
 import lgnAPI from '@/apis/login'
-import Order from '@/types/order'
+import Order, { OrderStatus, statusColor as orderStatColor } from '@/types/order'
 import models from '@/jsons/models.json'
 import Column from '@lib/types/column'
 import Mapper from '@lib/types/mapper'
 import { TinyEmitter } from 'tiny-emitter'
+import { Modal } from 'ant-design-vue'
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 
 const category = ref<'available' | 'ordered'>('available')
 const chambers = reactive<Chamber[]>([])
@@ -115,7 +145,7 @@ async function refresh() {
     myOrders.length,
     ...(await api.all('order', {
       copy: Order.copy,
-      axiosConfig: { params: { users: payload.sub } }
+      axiosConfig: { params: { fkUser: payload.sub, _ext: true } }
     }))
   )
   loading.value = false
@@ -123,15 +153,28 @@ async function refresh() {
 function onOrder(chamber: Chamber) {
   orderConfm.emitter.emit('update:visible', { show: true, object: newOrder([chamber]) })
 }
-function chamberStatColor(status: ChamberStatus) {
-  return statusColor[status]
-}
 async function onOrderConform(order: Order & { chamber: Chamber[] }, next: Function) {
-  const newOrder = await api.add('order', order, { ignores: ['chambers', 'users'], copy: Order.copy })
-  await api.link('order', newOrder.key, 'chambers', order.chamber[0].key)
+  const newOrder = await api.add('order', order, {
+    ignores: ['fkChamber', 'fkUser'],
+    copy: Order.copy
+  })
+  await api.link('order', newOrder.key, 'fkChamber', order.chamber[0].key)
+  const { payload } = await lgnAPI.verify()
+  await api.link('order', newOrder.key, 'fkUser', payload.sub)
+  await refresh()
   next()
 }
 function newOrder(chamber: Chamber[] = []) {
   return { ...new Order(), chamber }
+}
+function onCancelOrder(order: Order) {
+  Modal.confirm({
+    title: '确定取消该预约？',
+    icon: createVNode(ExclamationCircleOutlined),
+    async onOk() {
+      await api.update('order', order.key, { status: '已失效' })
+      await refresh()
+    }
+  })
 }
 </script>

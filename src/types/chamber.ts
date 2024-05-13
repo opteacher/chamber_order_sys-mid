@@ -1,7 +1,5 @@
 import { gnlCpy } from "@lib/utils"
 
-export type ChamberStatus = '运行中' | '已停止' | '锁定' | '已预约' | '异常'
-
 export const statusColor = {
   '运行中': 'processing',
   '已停止': 'default',
@@ -9,6 +7,8 @@ export const statusColor = {
   '已预约': 'success',
   '异常': 'error'
 }
+
+export type ChamberStatus = keyof typeof statusColor
 
 export default class Chamber {
   key: number
