@@ -19,6 +19,32 @@
       :addable="table.operable.includes('可增加')"
       :delable="table.operable.includes('可删除')"
     >
+      <template v-if="mname === 'order'" #extra>
+        <a-button @click="() => setProp(orderOptions, 'pointsVisible', true)">选择时间段</a-button>
+        <a-modal
+          title="可预约时刻点"
+          width="30vw"
+          v-model:open="orderOptions.pointsVisible"
+          @ok="onOrderPointsSubmit"
+        >
+          <a-row class="mt-5" :gutter="8">
+            <a-col
+              v-for="idx of Array.from({ length: 24 }, (_, i) => i)"
+              :key="idx"
+              class="mb-3"
+              :span="3"
+            >
+              <a-button
+                class="w-full"
+                :type="orderOptions.points.includes(idx) ? 'primary' : 'default'"
+                @click="() => onOrderTmPointClick(idx)"
+              >
+                {{ idx.toString().padStart(2, '0') }}
+              </a-button>
+            </a-col>
+          </a-row>
+        </a-modal>
+      </template>
       <template #odDtTm="{ record }">
         {{ dayjs(record.odDtTm).format('YYYY/MM/DD HH:mm:ss') }}
       </template>
@@ -41,12 +67,14 @@ import { useRoute } from 'vue-router'
 import { TinyEmitter as Emitter } from 'tiny-emitter'
 import { createByFields } from '@lib/types/mapper'
 import api from '@/apis/model'
-import { genDftFmProps } from '@/utils'
+import { genDftFmProps, setProp } from '@/utils'
 import Column from '@lib/types/column'
 import Model from '@/types/bases/model'
 import Table from '@/types/bases/table'
 import dayjs from 'dayjs'
 import Order from '@/types/order'
+import Config from '@/types/config'
+import _ from 'lodash'
 
 const route = useRoute()
 const mname = ref<string>('')
@@ -54,9 +82,30 @@ const model = reactive<Model>(new Model())
 const table = reactive<Table>(new Table())
 const columns = ref<Column[]>([])
 const emitter = new Emitter()
+const orderOptions = reactive({
+  pointsVisible: false,
+  points: [] as number[],
+  cfgKey: 0
+})
 
 onMounted(refresh)
 watch(() => route.params.mname, refresh)
+watch(
+  () => orderOptions.pointsVisible,
+  async () => {
+    if (orderOptions.pointsVisible) {
+      let sysConf = new Config()
+      const result = await api.all('config', { copy: Config.copy })
+      if (!result.length) {
+        orderOptions.cfgKey = await api.add('config', sysConf, { copy: Config.copy }).then(res => res.key)
+      } else {
+        Config.copy(result[0], sysConf, true)
+        orderOptions.cfgKey = result[0].key
+      }
+      orderOptions.points = sysConf.orderPoints
+    }
+  }
+)
 
 function refresh() {
   mname.value = route.params.mname as string
@@ -92,5 +141,16 @@ function onUpdate(record: any) {
 }
 function onRemove(record: any) {
   return api.remove(mname.value, record.key)
+}
+function onOrderTmPointClick(idx: number) {
+  if (orderOptions.points.includes(idx)) {
+    _.remove(orderOptions.points, i => i === idx)
+  } else {
+    orderOptions.points.push(idx)
+  }
+}
+async function onOrderPointsSubmit() {
+  await api.update('config', orderOptions.cfgKey, { orderPoints: orderOptions.points })
+  orderOptions.pointsVisible = false
 }
 </script>
