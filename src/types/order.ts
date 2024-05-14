@@ -4,10 +4,10 @@ import User from './user'
 import { gnlCpy } from '@lib/utils'
 
 export const statusColor = {
-  '未到时': 'processing',
+  '未到时': 'success',
   '已失效': 'default',
   '已过期': 'error',
-  '进行中': 'success'
+  '进行中': 'processing'
 }
 
 export type OrderStatus = keyof typeof statusColor

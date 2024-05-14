@@ -1,0 +1,44 @@
+{
+  "color": ["#87d068", "#f50", "#108ee9", "rgb(0 0 0 / 88%)"],
+  "tooltip": {
+    "formatter": "return (params) => `${params.marker}${params.name}: ${params.value[3] / 1000}s`"
+  },
+  "legend": {
+    "data": ["未到时", "已过期", "进行中", "已失效"],
+    "top": "1%",
+    "selectedMode": false,
+    "textStyle": {
+      "color": "#000"
+    }
+  },
+  "grid": {
+    "left": "3%",
+    "right": "4%",
+    "top": "30%",
+    "bottom": "2%",
+    "containLabel": true,
+    "height": 100
+  },
+  "xAxis": {
+    "type": "time",
+    "min": "return (new Date()).getTime() - 1000 * 60 * 60 * 10"
+  },
+  "yAxis": {
+    "data": "return [chamber.name]"
+  },
+  "series": [
+    { "name": "未到时", "type": "bar", "data": [] },
+    { "name": "已过期", "type": "bar", "data": [] },
+    { "name": "进行中", "type": "bar", "data": [] },
+    { "name": "已失效", "type": "bar", "data": [] },
+    {
+      "type": "custom",
+      "renderItem": "return renderItem",
+      "encode": {
+        "x": [1, 2],
+        "y": 0
+      },
+      "data": "return orders.map(order => ({ name: order.status, value: [0, order.odDtTm.toDate(), order.odDtTm.add(order.duration, 'minute').toDate()], itemStyle: { color: statusColor[order.status] } }))"
+    }
+  ]
+}

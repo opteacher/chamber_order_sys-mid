@@ -18,6 +18,7 @@
       :editable="table.operable.includes('可编辑')"
       :addable="table.operable.includes('可增加')"
       :delable="table.operable.includes('可删除')"
+      @expand="onRecordExpanded"
     >
       <template v-if="mname === 'order'" #extra>
         <a-button @click="() => setProp(orderOptions, 'pointsVisible', true)">选择时间段</a-button>
@@ -55,6 +56,9 @@
         {{ record.user ? `${record.user.name} / ${record.user.phone}` : '-' }}
       </template>
       <template #duration="{ record }">{{ record.duration }}分钟</template>
+      <template v-if="mname === 'chamber'" #expandedRowRender="{ record }">
+        <div :id="record.name" class="w-full h-48" />
+      </template>
     </EditableTable>
   </MainLayout>
 </template>
@@ -67,7 +71,7 @@ import { useRoute } from 'vue-router'
 import { TinyEmitter as Emitter } from 'tiny-emitter'
 import { createByFields } from '@lib/types/mapper'
 import api from '@/apis/model'
-import { genDftFmProps, setProp } from '@/utils'
+import { genDftFmProps, renderItem, setProp } from '@/utils'
 import Column from '@lib/types/column'
 import Model from '@/types/bases/model'
 import Table from '@/types/bases/table'
@@ -75,6 +79,10 @@ import dayjs from 'dayjs'
 import Order from '@/types/order'
 import Config from '@/types/config'
 import _ from 'lodash'
+import Chamber from '@/types/chamber'
+import User from '@/types/user'
+import orderStatus from '@/jsons/orderStatus.json'
+import * as echarts from 'echarts'
 
 const route = useRoute()
 const mname = ref<string>('')
@@ -87,6 +95,11 @@ const orderOptions = reactive({
   points: [] as number[],
   cfgKey: 0
 })
+const copies = {
+  chamber: Chamber.copy,
+  order: Order.copy,
+  user: User.copy
+} as any
 
 onMounted(refresh)
 watch(() => route.params.mname, refresh)
@@ -97,7 +110,9 @@ watch(
       let sysConf = new Config()
       const result = await api.all('config', { copy: Config.copy })
       if (!result.length) {
-        orderOptions.cfgKey = await api.add('config', sysConf, { copy: Config.copy }).then(res => res.key)
+        orderOptions.cfgKey = await api
+          .add('config', sysConf, { copy: Config.copy })
+          .then(res => res.key)
       } else {
         Config.copy(result[0], sysConf, true)
         orderOptions.cfgKey = result[0].key
@@ -116,12 +131,10 @@ function refresh() {
   emitter.emit('refresh')
 }
 function onGetAll() {
-  return api.all(
-    mname.value,
-    mname.value === 'order'
-      ? { copy: Order.copy, axiosConfig: { params: { _ext: true } } }
-      : undefined
-  )
+  return api.all(mname.value, {
+    copy: copies[mname.value],
+    axiosConfig: { params: { _ext: true } }
+  })
 }
 function onAdd(record: any) {
   return api.add(
@@ -152,5 +165,40 @@ function onOrderTmPointClick(idx: number) {
 async function onOrderPointsSubmit() {
   await api.update('config', orderOptions.cfgKey, { orderPoints: orderOptions.points })
   orderOptions.pointsVisible = false
+}
+async function onRecordExpanded(record: any) {
+  if (mname.value === 'chamber') {
+    const chamber = record as Chamber
+    const orders = (await api.all('order', {
+      copy: Order.copy,
+      axiosConfig: { params: { _ext: true, fkChamber: chamber.key } }
+    })) as Order[]
+    console.log(orders)
+    const options = recuJsonFuncs(orderStatus, {
+      renderItem,
+      dayjs,
+      chamber,
+      orders,
+      statusColor: {
+        未到时: '#87d068',
+        已失效: 'rgb(0 0 0 / 88%)',
+        已过期: '#f50',
+        进行中: '#108ee9'
+      }
+    })
+    console.log(options)
+    echarts.init(document.getElementById(chamber.name)).setOption(options)
+  }
+}
+function recuJsonFuncs(json: any, params: any) {
+  for (const [key, value] of Object.entries(json)) {
+    if (value instanceof Object) {
+      json[key] = recuJsonFuncs(value, params)
+    } else if (typeof value === 'string' && value.startsWith('return ')) {
+      const func = new Function(...Object.keys(params), value)
+      json[key] = func(...Object.values(params))
+    }
+  }
+  return json
 }
 </script>
