@@ -57,7 +57,7 @@
       </template>
       <template #duration="{ record }">{{ record.duration }}分钟</template>
       <template v-if="mname === 'chamber'" #expandedRowRender="{ record }">
-        <div :id="record.name" class="w-full h-48" />
+        <div :id="record.name" class="w-full h-64" />
       </template>
     </EditableTable>
   </MainLayout>
@@ -180,8 +180,8 @@ async function onRecordExpanded(record: any) {
       chamber,
       orders,
       statusColor: {
-        未到时: '#87d068',
-        已失效: 'rgb(0 0 0 / 88%)',
+        未到时: '#faad14',
+        已失效: 'rgba(0, 0, 0, 0.15)',
         已过期: '#f50',
         进行中: '#108ee9'
       }

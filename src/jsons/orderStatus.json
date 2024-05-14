@@ -1,7 +1,11 @@
 {
-  "color": ["#87d068", "#f50", "#108ee9", "rgb(0 0 0 / 88%)"],
+  "title": {
+    "text": "预约时间图",
+    "left": 0
+  },
+  "color": ["#faad14", "#f50", "#108ee9", "rgba(0, 0, 0, 0.15)"],
   "tooltip": {
-    "formatter": "return (params) => `${params.marker}${params.name}: ${params.value[3] / 1000}s`"
+    "formatter": "return (params) => `${params.marker}${params.name}：${params.value[3]}分钟`"
   },
   "legend": {
     "data": ["未到时", "已过期", "进行中", "已失效"],
@@ -11,6 +15,19 @@
       "color": "#000"
     }
   },
+  "dataZoom": [
+    {
+      "type": "slider",
+      "filterMode": "weakFilter",
+      "showDataShadow": false,
+      "top": 170,
+      "labelFormatter": ""
+    },
+    {
+      "type": "inside",
+      "filterMode": "weakFilter"
+    }
+  ],
   "grid": {
     "left": "3%",
     "right": "4%",
@@ -21,7 +38,8 @@
   },
   "xAxis": {
     "type": "time",
-    "min": "return (new Date()).getTime() - 1000 * 60 * 60 * 10"
+    "max": "return dayjs().endOf('day').toDate()",
+    "min": "return dayjs().startOf('day').toDate()"
   },
   "yAxis": {
     "data": "return [chamber.name]"
@@ -38,7 +56,7 @@
         "x": [1, 2],
         "y": 0
       },
-      "data": "return orders.map(order => ({ name: order.status, value: [0, order.odDtTm.toDate(), order.odDtTm.add(order.duration, 'minute').toDate()], itemStyle: { color: statusColor[order.status] } }))"
+      "data": "return orders.map(order => ({ name: order.status, value: [0, order.odDtTm.toDate(), order.odDtTm.add(order.duration, 'minute').toDate(), order.duration], itemStyle: { color: statusColor[order.status] } }))"
     }
   ]
 }

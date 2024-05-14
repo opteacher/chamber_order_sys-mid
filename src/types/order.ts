@@ -4,7 +4,7 @@ import User from './user'
 import { gnlCpy } from '@lib/utils'
 
 export const statusColor = {
-  '未到时': 'success',
+  '未到时': 'warning',
   '已失效': 'default',
   '已过期': 'error',
   '进行中': 'processing'

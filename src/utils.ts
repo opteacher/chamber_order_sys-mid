@@ -33,7 +33,8 @@ export function renderItem(params: any, api: any) {
     rectShape && {
       type: 'rect',
       transition: ['shape'],
-      shape: rectShape
+      shape: rectShape,
+      style: api.style()
     }
   )
 }
