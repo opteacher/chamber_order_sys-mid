@@ -31,9 +31,13 @@
         >
           <a-form layout="vertical">
             <a-form-item label="可预约日期">
-              <div class="border border-solid border-gray-300 rounded">
-                <a-calendar :fullscreen="false" />
-              </div>
+              <MpvueCalendar
+                class="w-full"
+                select-mode="multi"
+                :use-swipe="false"
+                v-model:select-date="orderOptions.avaDates"
+                @onMonthChange="onMonthChange"
+              />
             </a-form-item>
             <a-form-item label="可预约时刻">
               <a-row class="mt-5" :gutter="8">
@@ -106,7 +110,7 @@ import {
 import Column from '@lib/types/column'
 import Model from '@/types/bases/model'
 import Table from '@/types/bases/table'
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import minMax from 'dayjs/plugin/minMax'
 import Order from '@/types/order'
 import Config from '@/types/config'
@@ -116,6 +120,7 @@ import User from '@/types/user'
 import orderStatus from '@/jsons/orderStatus.json'
 import * as echarts from 'echarts'
 import 'dayjs/locale/zh-cn'
+import MpvueCalendar from 'mpvue-calendar'
 
 dayjs.locale('zh-cn')
 dayjs.extend(minMax)
@@ -130,7 +135,7 @@ const orderOptions = reactive({
   pointsVisible: false,
   points: [] as number[],
   cfgKey: 0,
-  avaDates: [] as Dayjs[]
+  avaDates: [] as string[]
 })
 const copies = {
   chamber: Chamber.copy,
@@ -155,6 +160,8 @@ watch(
         orderOptions.cfgKey = result[0].key
       }
       orderOptions.points = sysConf.orderPoints
+      const nowDate = dayjs()
+      onMonthChange(nowDate.year(), nowDate.month() + 1)
     }
   }
 )
@@ -200,6 +207,7 @@ function onOrderTmPointClick(idx: number) {
   }
 }
 async function onOrderPointsSubmit() {
+  console.log(orderOptions.avaDates)
   await api.update('config', orderOptions.cfgKey, { orderPoints: orderOptions.points })
   orderOptions.pointsVisible = false
 }
@@ -233,4 +241,51 @@ function recuJsonFuncs(json: any, params: any) {
   }
   return json
 }
+function onMonthChange(year: number, month: number) {
+  const monthMapper = Object.assign(
+    {
+      2: year % 4 ? 29 : 28
+    },
+    Object.fromEntries([1, 3, 5, 7, 8, 10, 12].map(i => [i, 31])),
+    Object.fromEntries([4, 6, 9, 11].map(i => [i, 30]))
+  )
+  orderOptions.avaDates.splice(
+    0,
+    orderOptions.avaDates.length,
+    ...Array.from({ length: monthMapper[month] }, (_, i) => {
+      const date = dayjs(new Date(year, month - 1, i + 1))
+      return ![0, 6].includes(date.day()) ? date.format('YYYY-M-D') : ''
+    }).filter(str => str)
+  )
+}
 </script>
+
+<style>
+.vc-calendar-day::before {
+  padding-top: 30% !important;
+}
+.vc-day-selected::before {
+  background: #1677ff !important;
+}
+.vc-calendar-tools-container {
+  height: 60px !important;
+}
+.vc-calendar-week-head-container {
+  height: 40px !important;
+  padding-top: 20px !important;
+}
+.vc-calendar-prev {
+  line-height: 60px !important;
+  vertical-align: middle !important;
+}
+.vc-calendar-tools .vc-calendar-info {
+  font-size: 32px !important;
+}
+.vc-calendar-next {
+  line-height: 60px !important;
+  vertical-align: middle !important;
+}
+.vc-calendar-dayoff.vc-day-selected .vc-calendar-date {
+  color: white !important;
+}
+</style>
