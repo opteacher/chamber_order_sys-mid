@@ -3,6 +3,7 @@ import { gnlCpy } from "@lib/utils"
 export default class User {
   key: number
   name: string
+  policeId: string
   phone: string
   role: string
   unit: string
@@ -10,6 +11,7 @@ export default class User {
   constructor() {
     this.key = 0
     this.name = ''
+    this.policeId = ''
     this.phone = ''
     this.role = ''
     this.unit = ''
@@ -17,6 +19,7 @@ export default class User {
   reset() {
     this.key = 0
     this.name = ''
+    this.policeId = ''
     this.phone = ''
     this.role = ''
     this.unit = ''

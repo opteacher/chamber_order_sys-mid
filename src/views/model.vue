@@ -15,6 +15,7 @@
       :pagable="table.hasPages"
       :refOptions="table.refresh"
       :dspCols="table.colDspable"
+      :imExport="table.imExport"
       :editable="table.operable.includes('可编辑')"
       :addable="table.operable.includes('可增加')"
       :delable="table.operable.includes('可删除')"
@@ -23,31 +24,40 @@
       <template v-if="mname === 'order'" #extra>
         <a-button @click="() => setProp(orderOptions, 'pointsVisible', true)">选择时间段</a-button>
         <a-modal
-          title="可预约时刻点"
-          width="30vw"
+          title="可预约时间"
+          width="50vw"
           v-model:open="orderOptions.pointsVisible"
           @ok="onOrderPointsSubmit"
         >
-          <a-row class="mt-5" :gutter="8">
-            <a-col
-              v-for="idx of Array.from({ length: 24 }, (_, i) => i)"
-              :key="idx"
-              class="mb-3"
-              :span="3"
-            >
-              <a-button
-                class="w-full"
-                :type="orderOptions.points.includes(idx) ? 'primary' : 'default'"
-                @click="() => onOrderTmPointClick(idx)"
-              >
-                {{ idx.toString().padStart(2, '0') }}
-              </a-button>
-            </a-col>
-          </a-row>
+          <a-form layout="vertical">
+            <a-form-item label="可预约日期">
+              <div class="border border-solid border-gray-300 rounded">
+                <a-calendar :fullscreen="false" />
+              </div>
+            </a-form-item>
+            <a-form-item label="可预约时刻">
+              <a-row class="mt-5" :gutter="8">
+                <a-col
+                  v-for="idx of Array.from({ length: 48 }, (_, i) => i / 2)"
+                  :key="idx"
+                  class="mb-3"
+                  :span="3"
+                >
+                  <a-button
+                    class="w-full"
+                    :type="orderOptions.points.includes(idx) ? 'primary' : 'default'"
+                    @click="() => onOrderTmPointClick(idx)"
+                  >
+                    {{ numToClock(idx) }}
+                  </a-button>
+                </a-col>
+              </a-row>
+            </a-form-item>
+          </a-form>
         </a-modal>
       </template>
       <template #odDtTm="{ record }">
-        {{ dayjs(record.odDtTm).format('YYYY/MM/DD HH:mm:ss') }}
+        {{ dayjs(record.odDtTm).format('YYYY/MM/DD') }}
       </template>
       <template #fkChamber="{ record }">
         {{ record.chamber ? record.chamber.name : '-' }}
@@ -55,9 +65,23 @@
       <template #fkUser="{ record }">
         {{ record.user ? `${record.user.name} / ${record.user.phone}` : '-' }}
       </template>
-      <template #duration="{ record }">{{ record.duration }}分钟</template>
+      <template #duration="{ record }">
+        {{ record.duration }}:00 ~ {{ record.duration + 1 }}:00
+      </template>
       <template v-if="mname === 'chamber'" #expandedRowRender="{ record }">
         <div :id="record.name" class="w-full h-64" />
+      </template>
+      <template v-if="mname === 'order'" #status="{ record }">
+        {{ getOrderCurStatus(record) || '-' }}
+      </template>
+      <template #operOrder="{ record }">
+        <div class="flex space-x-2">
+          <a-button type="primary" ghost size="small" @click.stop="">开始使用</a-button>
+          <a-button type="primary" ghost size="small" @click.stop="" danger>失效</a-button>
+        </div>
+      </template>
+      <template #detail="{ record }">
+        <a-button type="primary" ghost size="small">查看预约单</a-button>
       </template>
     </EditableTable>
   </MainLayout>
@@ -71,11 +95,19 @@ import { useRoute } from 'vue-router'
 import { TinyEmitter as Emitter } from 'tiny-emitter'
 import { createByFields } from '@lib/types/mapper'
 import api from '@/apis/model'
-import { genDftFmProps, renderItem, setProp } from '@/utils'
+import {
+  genDftFmProps,
+  renderItem,
+  setProp,
+  getOrderCurStatus,
+  orderStatusToChartData,
+  numToClock
+} from '@/utils'
 import Column from '@lib/types/column'
 import Model from '@/types/bases/model'
 import Table from '@/types/bases/table'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
+import minMax from 'dayjs/plugin/minMax'
 import Order from '@/types/order'
 import Config from '@/types/config'
 import _ from 'lodash'
@@ -83,6 +115,10 @@ import Chamber from '@/types/chamber'
 import User from '@/types/user'
 import orderStatus from '@/jsons/orderStatus.json'
 import * as echarts from 'echarts'
+import 'dayjs/locale/zh-cn'
+
+dayjs.locale('zh-cn')
+dayjs.extend(minMax)
 
 const route = useRoute()
 const mname = ref<string>('')
@@ -93,7 +129,8 @@ const emitter = new Emitter()
 const orderOptions = reactive({
   pointsVisible: false,
   points: [] as number[],
-  cfgKey: 0
+  cfgKey: 0,
+  avaDates: [] as Dayjs[]
 })
 const copies = {
   chamber: Chamber.copy,
@@ -176,15 +213,10 @@ async function onRecordExpanded(record: any) {
     console.log(orders)
     const options = recuJsonFuncs(orderStatus, {
       renderItem,
+      orderStatusToChartData,
       dayjs,
       chamber,
-      orders,
-      statusColor: {
-        未到时: '#faad14',
-        已失效: 'rgba(0, 0, 0, 0.15)',
-        已过期: '#f50',
-        进行中: '#108ee9'
-      }
+      orders
     })
     console.log(options)
     echarts.init(document.getElementById(chamber.name)).setOption(options)

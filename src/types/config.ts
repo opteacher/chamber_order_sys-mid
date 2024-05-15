@@ -6,12 +6,12 @@ export default class Config {
 
   constructor() {
     this.key = 0
-    this.orderPoints = Array.from({ length: 24 }, (_, i) => i)
+    this.orderPoints = Array.from({ length: 48 }, (_, i) => i / 2)
   }
 
   reset() {
     this.key = 0
-    this.orderPoints = Array.from({ length: 24 }, (_, i) => i)
+    this.orderPoints = Array.from({ length: 48 }, (_, i) => i / 2)
   }
 
   static copy(src: any, tgt?: Config, force = false): Config {

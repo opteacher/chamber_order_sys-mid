@@ -1,11 +1,10 @@
 <template>
   <div
-    class="px-5 py-12 h-full flex items-center"
+    class="px-5 py-12 h-full flex items-center bg-center bg-fixed bg-cover bg-no-repeat"
     :style="{
       'justify-content': lgnProps.align,
       'background-color': lgnProps.bkgdColor,
-      'background-image':
-        'url(https://s.cn.bing.net/th?id=OHR.EmirganPark_ZH-CN3394557999_1920x1080.webp&qlt=50)'
+      'background-image': 'url(\'/src/assets/5c886206d1b40.jpg\')'
     }"
   >
     <div

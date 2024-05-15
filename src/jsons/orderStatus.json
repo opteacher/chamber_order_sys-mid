@@ -38,8 +38,8 @@
   },
   "xAxis": {
     "type": "time",
-    "max": "return dayjs().endOf('day').toDate()",
-    "min": "return dayjs().startOf('day').toDate()"
+    "max": "return dayjs.max(orders.map(order => order.status.map(state => state[1].add(order.duration, 'hour'))).flat())",
+    "min": "return dayjs.min(orders.map(order => order.status.map(state => state[1])).flat())"
   },
   "yAxis": {
     "data": "return [chamber.name]"
@@ -56,7 +56,7 @@
         "x": [1, 2],
         "y": 0
       },
-      "data": "return orders.map(order => ({ name: order.status, value: [0, order.odDtTm.toDate(), order.odDtTm.add(order.duration, 'minute').toDate(), order.duration], itemStyle: { color: statusColor[order.status] } }))"
+      "data": "return orderStatusToChartData(orders)"
     }
   ]
 }

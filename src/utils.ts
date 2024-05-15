@@ -1,6 +1,7 @@
 export * from '@lib/utils'
 import { bsTpDefault } from '@lib/types'
 import * as echarts from 'echarts'
+import Order from './types/order'
 
 export function genDftFmProps(props: any[]) {
   const ret = {} as Record<string, any>
@@ -36,5 +37,55 @@ export function renderItem(params: any, api: any) {
       shape: rectShape,
       style: api.style()
     }
+  )
+}
+
+export function getOrderCurStatus(order: Order) {
+  return order.status.length ? order.status[order.status.length - 1][0] : ''
+}
+
+const orderStatusColors = {
+  未到时: '#faad14',
+  已失效: 'rgba(0, 0, 0, 0.15)',
+  已过期: '#f50',
+  进行中: '#108ee9'
+}
+
+export function orderStatusToChartData(orders: Order[]) {
+  const ret = []
+  for (const order of orders) {
+    for (let i = 0; i < order.status.length; ++i) {
+      const state = order.status[i]
+      console.log(state)
+      ret.push({
+        name: state[0],
+        value: [
+          order.key,
+          state[1].add(order.duration, 'hour').toDate(),
+          i !== order.status.length - 1
+            ? order.status[i + 1][1].toDate()
+            : state[1].add(10, 'minute')
+        ],
+        itemStyle: {
+          color: orderStatusColors[state[0]]
+        }
+      })
+    }
+  }
+  return ret
+}
+
+export function numToClock(num: number, range = false) {
+  const fmtNum = Math.floor(num)
+  const flag = num - fmtNum
+  return (
+    `${fmtNum.toString().padStart(2, '0')}:${flag ? '30' : '00'}` +
+    (range
+      ? ` ~ ${
+          flag
+            ? (fmtNum + 1).toString().padStart(2, '0') + ':00'
+            : fmtNum.toString().padStart(2, '0') + ':30'
+        }`
+      : '')
   )
 }

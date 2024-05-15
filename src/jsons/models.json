@@ -96,7 +96,7 @@
       "hasPages": true,
       "refresh": [],
       "operable": ["可增加", "可编辑", "可删除"],
-      "imExport": [],
+      "imExport": true,
       "columns": [
         {
           "title": "舱名",
@@ -109,6 +109,13 @@
           "dataIndex": "status",
           "group": [],
           "_id": "66397f221a109cf69d8f7c45"
+        },
+        {
+          "title": "查看",
+          "dataIndex": "detail",
+          "width": 80,
+          "group": [],
+          "_id": "663dd380c510aebb490dfcfb"
         }
       ],
       "cells": [
@@ -127,6 +134,14 @@
           "prefix": "",
           "suffix": "",
           "_id": "66397f221a109cf69d8f7c4f"
+        },
+        {
+          "refer": "detail",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "_id": "66397f221a109cf69d8f7c4d"
         }
       ],
       "_id": "66397d031a109cf69d8f7bcd"
@@ -316,7 +331,7 @@
       "expandURL": "",
       "expHeight": -1,
       "colDspable": false,
-      "imExport": [],
+      "imExport": false,
       "columns": [
         {
           "title": "高压氧舱",
@@ -361,6 +376,12 @@
         {
           "title": "订单状态",
           "dataIndex": "status",
+          "group": [],
+          "_id": "663dd380c510aebb490dfcfb"
+        },
+        {
+          "title": "操作订单",
+          "dataIndex": "operOrder",
           "group": [],
           "_id": "663dd380c510aebb490dfcfb"
         }
@@ -503,6 +524,23 @@
         "remark": "",
         "dftVal": "",
         "_id": "663b17530cebf8f77de65fab"
+      },
+      {
+        "name": "policeId",
+        "label": "警号",
+        "ptype": "String",
+        "index": true,
+        "unique": true,
+        "visible": true,
+        "relative": {
+          "model": "",
+          "belong": false,
+          "isArray": false,
+          "_id": "6644523b42ac589e83749a55"
+        },
+        "remark": "",
+        "dftVal": "",
+        "_id": "6644523b42ac589e83749a54"
       }
     ],
     "form": {
@@ -513,31 +551,239 @@
         {
           "label": "登录名",
           "ftype": "Input",
-          "rules": [],
+          "rules": [
+            {
+              "required": true,
+              "message": "必须填写登录名！"
+            }
+          ],
           "refer": "name",
           "_id": "663981121a109cf69d8f8071",
           "desc": "",
           "placeholder": ""
         },
         {
+          "label": "警号",
+          "ftype": "Input",
+          "rules": [],
+          "refer": "policeId",
+          "placeholder": "不是警官可以不填",
+          "_id": "6644523b42ac589e83749a56"
+        },
+        {
           "label": "登录密码",
           "ftype": "Password",
-          "rules": [],
+          "rules": [
+            {
+              "required": true,
+              "message": "必须填写密码！"
+            }
+          ],
           "refer": "password",
           "_id": "663981211a109cf69d8f8108"
         },
         {
           "label": "手机",
           "ftype": "Input",
-          "rules": [],
+          "rules": [
+            {
+              "required": true,
+              "message": "必须填写手机号！"
+            },
+            {
+              "pattern": "^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$",
+              "message": "请填写正确的手机号！"
+            }
+          ],
           "refer": "phone",
           "_id": "663981301a109cf69d8f81bb"
         },
         {
           "label": "单位",
-          "ftype": "Select",
-          "rules": [],
+          "ftype": "Cascader",
+          "rules": [
+            {
+              "required": true,
+              "message": "必须选择单位！"
+            }
+          ],
           "refer": "unit",
+          "extra": {
+            "options": [
+              {
+                "value": "派出所",
+                "label": "派出所",
+                "children": [
+                  {
+                    "value": "安亭所",
+                    "label": "安亭所"
+                  },
+                  {
+                    "value": "娄塘所",
+                    "label": "娄塘所"
+                  },
+                  {
+                    "value": "新成所",
+                    "label": "新成所"
+                  },
+                  {
+                    "value": "真新所",
+                    "label": "真新所"
+                  },
+                  {
+                    "value": "马陆所",
+                    "label": "马陆所"
+                  },
+                  {
+                    "value": "唐行所",
+                    "label": "唐行所"
+                  },
+                  {
+                    "value": "徐行所",
+                    "label": "徐行所"
+                  },
+                  {
+                    "value": "黄渡所",
+                    "label": "黄渡所"
+                  },
+                  {
+                    "value": "江桥所",
+                    "label": "江桥所"
+                  },
+                  {
+                    "value": "方泰所",
+                    "label": "方泰所"
+                  },
+                  {
+                    "value": "华亭所",
+                    "label": "华亭所"
+                  },
+                  {
+                    "value": "戬浜所",
+                    "label": "戬浜所"
+                  },
+                  {
+                    "value": "菊园所",
+                    "label": "菊园所"
+                  },
+                  {
+                    "value": "封浜所",
+                    "label": "封浜所"
+                  },
+                  {
+                    "value": "南翔所",
+                    "label": "南翔所"
+                  },
+                  {
+                    "value": "外冈所",
+                    "label": "外冈所"
+                  },
+                  {
+                    "value": "水上所",
+                    "label": "水上所"
+                  },
+                  {
+                    "value": "高校所",
+                    "label": "高校所"
+                  },
+                  {
+                    "value": "嘉城所",
+                    "label": "嘉城所"
+                  },
+                  {
+                    "value": "叶城所",
+                    "label": "叶城所"
+                  }
+                ]
+              },
+              {
+                "value": "局机关",
+                "label": "局机关",
+                "children": [
+                  {
+                    "value": "局领导",
+                    "label": "局领导"
+                  },
+                  {
+                    "value": "经侦支队",
+                    "label": "经侦支队"
+                  },
+                  {
+                    "value": "监察室",
+                    "label": "监察室"
+                  },
+                  {
+                    "value": "法制支队",
+                    "label": "法制支队"
+                  },
+                  {
+                    "value": "警保处",
+                    "label": "警保处"
+                  },
+                  {
+                    "value": "特警支队",
+                    "label": "特警支队"
+                  },
+                  {
+                    "value": "刑侦支队",
+                    "label": "刑侦支队"
+                  },
+                  {
+                    "value": "GB处",
+                    "label": "GB处"
+                  },
+                  {
+                    "value": "人口办",
+                    "label": "人口办"
+                  },
+                  {
+                    "value": "交警支队",
+                    "label": "交警支队"
+                  },
+                  {
+                    "value": "督察支队",
+                    "label": "督察支队"
+                  },
+                  {
+                    "value": "WA支队",
+                    "label": "WA支队"
+                  },
+                  {
+                    "value": "看守所",
+                    "label": "看守所"
+                  },
+                  {
+                    "value": "拘留所",
+                    "label": "拘留所"
+                  },
+                  {
+                    "value": "FK支队",
+                    "label": "FK支队"
+                  },
+                  {
+                    "value": "治安支队",
+                    "label": "治安支队"
+                  },
+                  {
+                    "value": "指挥处",
+                    "label": "指挥处"
+                  },
+                  {
+                    "value": "政治处",
+                    "label": "政治处"
+                  },
+                  {
+                    "value": "出入境办",
+                    "label": "出入境办"
+                  },
+                  {
+                    "value": "科技科",
+                    "label": "科技科"
+                  }
+                ]
+              }
+            ]
+          },
           "_id": "663b17530cebf8f77de65fad"
         }
       ],
@@ -557,6 +803,12 @@
           "dataIndex": "name",
           "group": [],
           "_id": "663981121a109cf69d8f8072"
+        },
+        {
+          "title": "警号",
+          "dataIndex": "policeId",
+          "group": [],
+          "_id": "6644523b42ac589e83749a57"
         },
         {
           "title": "登录密码",
@@ -586,6 +838,14 @@
           "prefix": "",
           "suffix": "",
           "_id": "663981121a109cf69d8f8078"
+        },
+        {
+          "refer": "policeId",
+          "cdCell": {},
+          "color": "#000000",
+          "prefix": "",
+          "suffix": "",
+          "_id": "6644523b42ac589e83749a6e"
         },
         {
           "refer": "password",
