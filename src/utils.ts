@@ -89,3 +89,22 @@ export function numToClock(num: number, range = false) {
       : '')
   )
 }
+
+const transform = {
+  1: '一',
+  2: '二',
+  3: '三',
+  4: '四',
+  5: '五',
+  6: '六',
+  7: '七',
+  8: '八',
+  9: '九',
+  10: '十',
+  11: '十一',
+  12: '十二',
+}
+
+export function formatOfYearMonth(year: number, month: keyof typeof transform) {
+  return [`${year}年`, `${transform[month]}月`];
+}

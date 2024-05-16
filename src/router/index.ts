@@ -31,23 +31,23 @@ const routes: Array<RouteRecordRaw> = [
     meta: { reqLogin: true }
   },
   {
-    path: '/chamber_order_sys/login',
+    path: `/${project.name}/login`,
     name: 'login',
     component: login
   },
   {
-    path: '/chamber_order_sys/user_login',
+    path: `/${project.name}/user_login`,
     name: 'userLogin',
     component: user,
     meta: { reqLogin: true }
   },
   {
-    path: '/chamber_order_sys/user_order',
+    path: `/${project.name}/user_order`,
     name: 'userOrder',
     component: userOrder
   },
   {
-    path: '/chamber_order_sys/user_profile',
+    path: `/${project.name}/user_profile`,
     name: 'userProfile',
     component: userProfile
   },

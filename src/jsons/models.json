@@ -338,7 +338,7 @@
           "dataIndex": "fkChamber",
           "group": [],
           "align": "left",
-          "searchable": false,
+          "searchable": true,
           "filterable": false,
           "notDisplay": false,
           "_id": "6639847e1a109cf69d8f8af5"
