@@ -44,7 +44,9 @@ router.beforeEach(refresh)
 async function refresh() {
   const paths = route.path.split('/')
   userPage.value = paths[paths.length - 1]
-  await getSysConf()
+  if (localStorage.getItem('token')) {
+    await getSysConf()
+  }
 }
 function onLogout() {
   localStorage.removeItem('token')

@@ -4,7 +4,7 @@
       <a-divider class="border-slate-300">
         <a-radio-group v-model:value="category" button-style="solid" @change="refresh">
           <a-radio-button value="available">可用氧舱</a-radio-button>
-          <a-badge :count="myOrders.filter(order => getOrderCurStatus(order) !== '已失效').length">
+          <a-badge :count="myOrders.filter(order => order.lastState !== '已失效').length">
             <a-radio-button class="border-l-0 rounded-l-none rounded-r-md" value="ordered">
               我的预约
             </a-radio-button>
@@ -38,7 +38,7 @@
                   v-else
                   type="primary"
                   ghost
-                  :disabled="item.status !== '运行中'"
+                  :disabled="['已停止', '异常'].includes(item.status)"
                   @click="() => onOrder(item)"
                 >
                   预约
@@ -59,8 +59,8 @@
               <a-list-item-meta>
                 <template #title>
                   {{ item.chamber.name }}&nbsp;
-                  <a-tag :color="orderStatColor[getOrderCurStatus(item) as OrderStatus]">
-                    {{ getOrderCurStatus(item) }}
+                  <a-tag :color="orderStatColor[item.lastState as OrderStatus]">
+                    {{ item.lastState }}
                   </a-tag>
                 </template>
                 <template #description>
@@ -76,7 +76,7 @@
                   v-else
                   danger
                   ghost
-                  :disabled="getOrderCurStatus(item) !== '未到时'"
+                  :disabled="item.lastState !== '未到时'"
                   @click="() => onCancelOrder(item)"
                 >
                   取消
@@ -94,13 +94,34 @@
         :emitter="orderConfm.emitter"
         :newFun="genNewOrder"
         @submit="onOrderConform"
-      />
+      >
+        <template #odDtTm="{ formState }">
+          <a-date-picker
+            class="w-full"
+            placeholder="请选择"
+            :format="odDtTmMapper.format"
+            :show-time="odDtTmMapper.showTime"
+            :disabledDate="odDtTmMapper.dsbDates"
+            :value="getProp(formState, 'odDtTm', null)"
+            @change="
+              (newVal: any) => {
+                setProp(formState, 'odDtTm', newVal)
+                odDtTmMapper.onChange(formState, newVal)
+              }
+            "
+          >
+            <template #dateRender="{ current }">
+              <OdDateCard :hasOrder="dateHasOrder(current)" :current="current" />
+            </template>
+          </a-date-picker>
+        </template>
+      </FormDialog>
     </div>
   </UserLayout>
 </template>
 
 <script setup lang="ts">
-import { createVNode, onMounted, reactive, ref } from 'vue'
+import { computed, createVNode, onMounted, reactive, ref } from 'vue'
 import UserLayout from '@/layouts/user.vue'
 import Chamber, { ChamberStatus, statusColor as chamberStatColor } from '@/types/chamber'
 import api from '@/apis/model'
@@ -113,12 +134,13 @@ import { TinyEmitter } from 'tiny-emitter'
 import { Modal } from 'ant-design-vue'
 import { ExclamationCircleOutlined, InfoCircleOutlined } from '@ant-design/icons-vue'
 import _ from 'lodash'
-import { getOrderCurStatus, numToClock, dtTmFmt, sysConf } from '@/utils'
+import { numToClock, dtTmFmt, sysConf, getProp, setProp, dateFmt } from '@/utils'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+import OdDateCard from '@/components/userOrder/OdDateCard.vue'
 
 dayjs.locale('zh-cn')
 dayjs.extend(isSameOrBefore)
@@ -146,45 +168,71 @@ const orderConfm = reactive({
     odDtTm: {
       label: '预约时间',
       type: 'DateTime',
-      format: 'YYYY/MM/DD',
+      format: dateFmt,
       showTime: false,
-      empty: true,
       dsbDates: (date: Dayjs) => {
-        const strDate = date.format('YYYY-M-D')
+        const strDate = date.format(dateFmt)
         const isWeekend = [0, 6].includes(date.day())
         return (
           date.isBefore(dayjs().startOf('day')) ||
           (!sysConf.odAvaDates.includes(strDate) &&
             (sysConf.odAvaDates.includes('!' + strDate) || isWeekend))
         )
+      },
+      onChange: (_: any, date?: Dayjs) => {
+        if (!date) {
+          orderConfm.emitter.emit('update:mprop', { 'duration.options': [] })
+          return
+        }
+        const dateNow = dayjs.tz()
+        let orderPoints = sysConf.orderPoints.length
+          ? sysConf.orderPoints.sort((a, b) => a - b)
+          : allPoints
+        if (date.isSame(dateNow, 'day')) {
+          const curPoint = dateNow.hour() + (dateNow.minute() > 30 ? 0.5 : 0)
+          orderPoints = orderPoints.filter(point => point > curPoint)
+        }
+        const strDate = date.format(dateFmt)
+        const orders = Object.entries(orderConfm.datetimes)
+          .map(([dtTm, order]) => (dtTm.startsWith(strDate) ? order : null))
+          .filter(order => order) as Order[]
+        for (const order of orders) {
+          orderPoints.splice(orderPoints.indexOf(order?.duration), 1)
+        }
+        orderConfm.emitter.emit('update:mprop', {
+          'duration.options': orderPoints.map(idx => ({ label: numToClock(idx, true), value: idx }))
+        })
       }
     },
     duration: {
       label: '使用时段',
       type: 'Select',
-      allowClear: true,
-      empty: true,
-      options: allPoints.map(idx => ({ label: numToClock(idx, true), value: idx })),
-      onDropdown: () => {
-        const dateNow = dayjs.tz()
-        const curPoint = dateNow.hour() + (dateNow.minute() > 30 ? 0.5 : 0)
-        const orderPoints = sysConf.orderPoints.length
-          ? sysConf.orderPoints.sort((a, b) => a - b)
-          : allPoints
-        orderConfm.emitter.emit('update:mprop', {
-          'duration.options': orderPoints
-            .filter(point => point > curPoint)
-            .map(idx => ({ label: numToClock(idx, true), value: idx }))
-        })
-      }
+      allowClear: true
     }
   }),
-  emitter: new TinyEmitter()
+  emitter: new TinyEmitter(),
+  datetimes: {} as Record<string, Order>
 })
+const odDtTmMapper = computed(() => orderConfm.mapper['odDtTm'])
 const loading = ref(false)
 const allLock = ref(false)
 
 onMounted(refresh)
+orderConfm.emitter.on('show', async (order: Order) => {
+  orderConfm.datetimes = Object.fromEntries(
+    await api
+      .all('order', {
+        copy: Order.copy,
+        axiosConfig: { params: { fkChamber: order.chamber?.key, lastState: '未到时' } }
+      })
+      .then(orders =>
+        orders.map((order: Order) => [
+          [order.odDtTm.format(dateFmt), numToClock(order.duration)].join('T'),
+          order
+        ])
+      )
+  )
+})
 
 async function refresh() {
   loading.value = true
@@ -197,19 +245,13 @@ async function refresh() {
   myOrders.splice(
     0,
     myOrders.length,
-    ..._.remove(orders, order => getOrderCurStatus(order) === '进行中'),
-    ..._.remove(orders, order => getOrderCurStatus(order) === '未到时'),
+    ..._.remove(orders, order => order.lastState === '进行中'),
+    ..._.remove(orders, order => order.lastState === '未到时'),
     ...orders
   )
   allLock.value =
     !sysConf.orderOnOff ||
-    myOrders.filter(order => ['未到时', '进行中'].includes(getOrderCurStatus(order))).length !== 0
-  const orderPoints = sysConf.orderPoints.length
-    ? sysConf.orderPoints.sort((a, b) => a - b)
-    : allPoints
-  orderConfm.emitter.emit('update:mprop', {
-    'duration.options': orderPoints.map(idx => ({ label: numToClock(idx, true), value: idx }))
-  })
+    myOrders.filter(order => ['未到时', '进行中'].includes(order.lastState)).length !== 0
   loading.value = false
 }
 function onOrder(chamber: Chamber) {
@@ -218,9 +260,12 @@ function onOrder(chamber: Chamber) {
 async function onOrderConform(order: Order & { chamber: Chamber[] }, next: Function) {
   const newOrder = await api.add(
     'order',
-    Object.assign(order, { status: [['未到时', dayjs().format(dtTmFmt)].join('|')] }),
+    Object.assign(order, {
+      status: [['未到时', dayjs().format(dtTmFmt)].join('|')],
+      lastState: '未到时'
+    }),
     {
-      ignores: ['fkChamber', 'fkUser'],
+      ignores: ['fkChamber', 'fkUser', 'chamber', 'user'],
       copy: Order.copy
     }
   )
@@ -233,7 +278,7 @@ async function onOrderConform(order: Order & { chamber: Chamber[] }, next: Funct
   next()
 }
 function genNewOrder(chamber: Chamber[] = []) {
-  return { ...new Order(), chamber }
+  return { odDtTm: null, duration: null, chamber }
 }
 function onCancelOrder(order: Order) {
   Modal.confirm({
@@ -244,7 +289,8 @@ function onCancelOrder(order: Order) {
         'order',
         order.key,
         {
-          status: ['已失效', dayjs().format(dtTmFmt)].join('|')
+          status: ['已失效', dayjs().format(dtTmFmt)].join('|'),
+          lastState: '已失效'
         },
         { axiosConfig: { params: { _updMode: 'append' } } }
       )
@@ -252,5 +298,10 @@ function onCancelOrder(order: Order) {
       await refresh()
     }
   })
+}
+function dateHasOrder(date: Dayjs) {
+  return Object.keys(orderConfm.datetimes)
+    .map(dtTm => dtTm.split('T')[0])
+    .includes(date.format(dateFmt))
 }
 </script>

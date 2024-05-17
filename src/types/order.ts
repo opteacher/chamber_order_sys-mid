@@ -2,7 +2,6 @@ import dayjs, { Dayjs } from 'dayjs'
 import Chamber from './chamber'
 import User from './user'
 import { gnlCpy } from '@lib/utils'
-import { getOrderCurStatus } from '@/utils'
 
 export const statusColor = {
   未到时: 'warning',
@@ -22,7 +21,7 @@ export default class Order {
   fkUser: number
   user?: User
   status: [OrderStatus, Dayjs][]
-  state: OrderStatus
+  lastState: OrderStatus
 
   constructor() {
     this.key = 0
@@ -31,7 +30,7 @@ export default class Order {
     this.duration = 10
     this.fkUser = 0
     this.status = []
-    this.state = '已失效'
+    this.lastState = '已失效'
   }
 
   reset() {
@@ -41,7 +40,7 @@ export default class Order {
     this.duration = 10
     this.fkUser = 0
     this.status = []
-    this.state = '已失效'
+    this.lastState = '已失效'
   }
 
   static copy(src: any, tgt?: Order, force = false): Order {
@@ -55,7 +54,6 @@ export default class Order {
         const [strStt, strDtTm] = stt.split('|')
         return [strStt, dayjs(strDtTm)]
       })
-      tgt.state = getOrderCurStatus(tgt)
     }
     return tgt
   }

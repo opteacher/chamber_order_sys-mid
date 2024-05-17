@@ -295,7 +295,7 @@
           "label": "订单状态",
           "ftype": "Select",
           "rules": [],
-          "refer": "state",
+          "refer": "lastState",
           "_id": "663dd380c510aebb490dfcfa",
           "extra": {
             "options": [
@@ -377,7 +377,8 @@
         },
         {
           "title": "订单状态",
-          "dataIndex": "status",
+          "dataIndex": "lastState",
+          "filterable": true,
           "group": [],
           "_id": "663dd380c510aebb490dfcfb"
         },
@@ -430,7 +431,7 @@
           "_id": "6639847e1a109cf69d8f8afc"
         },
         {
-          "refer": "state",
+          "refer": "lastState",
           "cdCell": {},
           "color": "#000000",
           "prefix": "",

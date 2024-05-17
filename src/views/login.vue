@@ -105,7 +105,7 @@ import mdlAPI from '@/apis/model'
 import project from '@/jsons/project.json'
 import models from '@/jsons/models.json'
 import { createByFields } from '@lib/types/mapper'
-import { setProp } from '@lib/utils'
+import { pickOrIgnore, setProp } from '@lib/utils'
 import { genDftFmProps } from '@/utils'
 import { notification } from 'ant-design-vue'
 import OptSclPnl from '@lib/components/OptSclPnl.vue'
@@ -181,9 +181,10 @@ async function onRegist(value: any) {
     })
     return
   }
+  const fixVal = !value.policeId ? pickOrIgnore(value, ['policeId']) : value
   const result = await mdlAPI.add(
     authMdl?.name as string,
-    { ...value, role: 'user' },
+    { ...fixVal, role: 'user' },
     { type: 'api' }
   )
   if (result.error) {

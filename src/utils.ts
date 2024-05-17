@@ -43,10 +43,6 @@ export function renderItem(params: any, api: any) {
   )
 }
 
-export function getOrderCurStatus(order: Order): OrderStatus {
-  return order.status.length ? order.status[order.status.length - 1][0] : '已失效'
-}
-
 const orderStatusColors = {
   未到时: '#faad14',
   已失效: 'rgba(0, 0, 0, 0.15)',
@@ -125,3 +121,5 @@ export async function getSysConf() {
   )
   return sysConf
 }
+
+export const dateFmt = 'YYYY-M-D'

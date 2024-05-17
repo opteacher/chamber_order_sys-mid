@@ -108,15 +108,15 @@
       <template v-if="mname === 'chamber'" #expandedRowRender="{ record }">
         <div :id="record.name" class="w-full h-64" />
       </template>
-      <template v-if="mname === 'order'" #status="{ record }">
-        <a-tag :color="statusColor[getOrderCurStatus(record)]">
-          {{ getOrderCurStatus(record) || '-' }}
+      <template v-if="mname === 'order'" #lastState="{ record }">
+        <a-tag :color="statusColor[record.lastState as OrderStatus]">
+          {{ record.lastState || '-' }}
         </a-tag>
       </template>
-      <template v-if="mname === 'order'" #statusEDT="{ editing }">
+      <template v-if="mname === 'order'" #lastStateEDT="{ editing }">
         <a-select
           :options="Object.keys(statusColor).map(state => ({ label: state, value: state }))"
-          v-model:value="editing.state"
+          v-model:value="editing.lastState"
         />
       </template>
       <template v-if="mname === 'order'" #statusVW="{ current }">
@@ -129,7 +129,7 @@
       <template #operOrder="{ record }">
         <div class="flex space-x-2">
           <a-button
-            v-if="!['进行中', '已失效'].includes(getOrderCurStatus(record))"
+            v-if="!['进行中', '已失效'].includes(record.lastState)"
             type="primary"
             ghost
             size="small"
@@ -138,7 +138,7 @@
             开始使用
           </a-button>
           <a-button
-            v-if="!['已失效'].includes(getOrderCurStatus(record))"
+            v-if="!['已失效'].includes(record.lastState)"
             type="primary"
             ghost
             size="small"
@@ -180,7 +180,6 @@ import api from '@/apis/model'
 import {
   genDftFmProps,
   renderItem,
-  getOrderCurStatus,
   orderStatusToChartData,
   numToClock,
   formatOfYearMonth,
@@ -399,27 +398,28 @@ async function onSchChamberClear() {
 function onOrderCancel(order: Order) {
   updateOrderStatus(order.key, '已失效', '确定失效该订单？')
 }
-function updateOrderStatus(odKey: any, status: OrderStatus, title: string, content?: string) {
+function updateOrderStatus(odKey: any, state: OrderStatus, title: string, content?: string) {
   Modal.confirm({
     title,
     icon: createVNode(ExclamationCircleOutlined),
     content: content ? createVNode('div', { class: 'text-red-500' }, content) : undefined,
-    onOk: () =>
-      api
-        .update(
-          'order',
-          odKey,
-          { status: `${status}|${dayjs().format(dtTmFmt)}` },
-          { axiosConfig: { params: { _updMode: 'append' } } }
-        )
-        .then(refresh)
+    onOk: async () => {
+      await api.update(
+        'order',
+        odKey,
+        { status: `${state}|${dayjs().format(dtTmFmt)}` },
+        { axiosConfig: { params: { _updMode: 'append' } } }
+      )
+      await api.update('order', odKey, { lastState: state })
+      await refresh()
+    }
   })
 }
 function onOrderBefSave(order: Order) {
   if (mname.value === 'order') {
     order.status = [
       ...order.status.map(state => `${state[0]}|${state[1].format(dtTmFmt)}`),
-      [order.state, dayjs().format(dtTmFmt)].join('|')
+      [order.lastState, dayjs().format(dtTmFmt)].join('|')
     ] as any
   }
 }
