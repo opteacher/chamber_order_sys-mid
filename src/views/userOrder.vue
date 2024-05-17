@@ -30,8 +30,12 @@
                 </template>
               </a-list-item-meta>
               <template #actions>
+                <a-space v-if="allLock" align="baseline">
+                  <InfoCircleOutlined />
+                  {{ !sysConf.orderOnOff ? '预约系统关闭' : '已预约氧舱' }}
+                </a-space>
                 <a-button
-                  v-if="!allLock"
+                  v-else
                   type="primary"
                   ghost
                   :disabled="item.status !== '运行中'"
@@ -39,10 +43,6 @@
                 >
                   预约
                 </a-button>
-                <a-space v-else align="baseline">
-                  <InfoCircleOutlined />
-                  已预约氧舱
-                </a-space>
               </template>
             </a-list-item>
           </template>
@@ -64,11 +64,16 @@
                   </a-tag>
                 </template>
                 <template #description>
-                  {{ item.odDtTm.format('YYYY/MM/DD HH:mm:ss') }}
+                  {{ item.odDtTm ? item.odDtTm.format('YYYY/MM/DD HH:mm:ss') : 'invalid date' }}
                 </template>
               </a-list-item-meta>
               <template #actions>
+                <a-space v-if="!sysConf.orderOnOff" align="baseline">
+                  <InfoCircleOutlined />
+                  预约系统关闭
+                </a-space>
                 <a-button
+                  v-else
                   danger
                   ghost
                   :disabled="getOrderCurStatus(item) !== '未到时'"
@@ -108,12 +113,17 @@ import { TinyEmitter } from 'tiny-emitter'
 import { Modal } from 'ant-design-vue'
 import { ExclamationCircleOutlined, InfoCircleOutlined } from '@ant-design/icons-vue'
 import _ from 'lodash'
-import Config from '@/types/config'
-import { getOrderCurStatus, numToClock } from '@/utils'
-import dayjs from 'dayjs'
+import { getOrderCurStatus, numToClock, dtTmFmt, sysConf } from '@/utils'
+import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/zh-cn'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 
 dayjs.locale('zh-cn')
+dayjs.extend(isSameOrBefore)
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const allPoints = Array.from({ length: 48 }, (_, i) => i / 2)
 const category = ref<'available' | 'ordered'>('available')
@@ -138,12 +148,35 @@ const orderConfm = reactive({
       type: 'DateTime',
       format: 'YYYY/MM/DD',
       showTime: false,
-      minuteStep: 5
+      empty: true,
+      dsbDates: (date: Dayjs) => {
+        const strDate = date.format('YYYY-M-D')
+        const isWeekend = [0, 6].includes(date.day())
+        return (
+          date.isBefore(dayjs().startOf('day')) ||
+          (!sysConf.odAvaDates.includes(strDate) &&
+            (sysConf.odAvaDates.includes('!' + strDate) || isWeekend))
+        )
+      }
     },
     duration: {
       label: '使用时段',
       type: 'Select',
-      options: allPoints.map(idx => ({ label: numToClock(idx, true), value: idx }))
+      allowClear: true,
+      empty: true,
+      options: allPoints.map(idx => ({ label: numToClock(idx, true), value: idx })),
+      onDropdown: () => {
+        const dateNow = dayjs.tz()
+        const curPoint = dateNow.hour() + (dateNow.minute() > 30 ? 0.5 : 0)
+        const orderPoints = sysConf.orderPoints.length
+          ? sysConf.orderPoints.sort((a, b) => a - b)
+          : allPoints
+        orderConfm.emitter.emit('update:mprop', {
+          'duration.options': orderPoints
+            .filter(point => point > curPoint)
+            .map(idx => ({ label: numToClock(idx, true), value: idx }))
+        })
+      }
     }
   }),
   emitter: new TinyEmitter()
@@ -169,12 +202,11 @@ async function refresh() {
     ...orders
   )
   allLock.value =
+    !sysConf.orderOnOff ||
     myOrders.filter(order => ['未到时', '进行中'].includes(getOrderCurStatus(order))).length !== 0
-  const orderPoints = await api
-    .all('config', { copy: Config.copy })
-    .then((configs: Config[]) =>
-      configs.length ? configs[0].orderPoints.sort((a, b) => a - b) : allPoints
-    )
+  const orderPoints = sysConf.orderPoints.length
+    ? sysConf.orderPoints.sort((a, b) => a - b)
+    : allPoints
   orderConfm.emitter.emit('update:mprop', {
     'duration.options': orderPoints.map(idx => ({ label: numToClock(idx, true), value: idx }))
   })
@@ -186,7 +218,7 @@ function onOrder(chamber: Chamber) {
 async function onOrderConform(order: Order & { chamber: Chamber[] }, next: Function) {
   const newOrder = await api.add(
     'order',
-    Object.assign(order, { status: [['未到时', dayjs().format('YYYY/MM/DDTHH:mm:ss')].join('|')] }),
+    Object.assign(order, { status: [['未到时', dayjs().format(dtTmFmt)].join('|')] }),
     {
       ignores: ['fkChamber', 'fkUser'],
       copy: Order.copy
@@ -212,9 +244,9 @@ function onCancelOrder(order: Order) {
         'order',
         order.key,
         {
-          status: ['已失效', dayjs().format('YYYY/MM/DDTHH:mm:ss')].join('|')
+          status: ['已失效', dayjs().format(dtTmFmt)].join('|')
         },
-        { axiosConfig: { params: { updMode: 'append' } } }
+        { axiosConfig: { params: { _updMode: 'append' } } }
       )
       await api.update('chamber', order.fkChamber, { status: '运行中' })
       await refresh()

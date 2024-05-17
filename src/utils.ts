@@ -1,7 +1,10 @@
 export * from '@lib/utils'
 import { bsTpDefault } from '@lib/types'
 import * as echarts from 'echarts'
-import Order from './types/order'
+import Order, { OrderStatus } from './types/order'
+import Config from './types/config'
+import api from '@/apis/model'
+import { reactive } from 'vue'
 
 export function genDftFmProps(props: any[]) {
   const ret = {} as Record<string, any>
@@ -40,8 +43,8 @@ export function renderItem(params: any, api: any) {
   )
 }
 
-export function getOrderCurStatus(order: Order) {
-  return order.status.length ? order.status[order.status.length - 1][0] : ''
+export function getOrderCurStatus(order: Order): OrderStatus {
+  return order.status.length ? order.status[order.status.length - 1][0] : '已失效'
 }
 
 const orderStatusColors = {
@@ -102,9 +105,23 @@ const transform = {
   9: '九',
   10: '十',
   11: '十一',
-  12: '十二',
+  12: '十二'
 }
 
 export function formatOfYearMonth(year: number, month: keyof typeof transform) {
-  return [`${year}年`, `${transform[month]}月`];
+  return [`${year}年`, `${transform[month]}月`]
+}
+
+export const dtTmFmt = 'YYYY/MM/DDTHH:mm:ss'
+
+export const sysConf = reactive(new Config())
+
+export async function getSysConf() {
+  const result = await api.all('config', { copy: Config.copy })
+  Config.copy(
+    !result.length ? await api.add('config', sysConf, { copy: Config.copy }) : result[0],
+    sysConf,
+    true
+  )
+  return sysConf
 }

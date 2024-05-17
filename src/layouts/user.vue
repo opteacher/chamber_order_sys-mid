@@ -11,6 +11,11 @@
           登出
         </a-button>
       </template>
+      <a-alert
+        v-if="!sysConf.orderOnOff"
+        message="预约系统已关闭，请联系管理员咨询详情"
+        type="error"
+      />
     </a-page-header>
     <div class="flex-1 px-6">
       <slot />
@@ -23,6 +28,7 @@ import { LogoutOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons-vu
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import project from '@/jsons/project.json'
+import { getSysConf, sysConf } from '@/utils'
 
 const route = useRoute()
 const router = useRouter()
@@ -35,9 +41,10 @@ const pageTitles = {
 onMounted(refresh)
 router.beforeEach(refresh)
 
-function refresh() {
+async function refresh() {
   const paths = route.path.split('/')
   userPage.value = paths[paths.length - 1]
+  await getSysConf()
 }
 function onLogout() {
   localStorage.removeItem('token')

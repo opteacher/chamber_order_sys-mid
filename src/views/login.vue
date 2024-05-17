@@ -25,6 +25,16 @@
         :wrapper-col="{ span: lgnProps.hasLabel ? 24 - lgnProps.lblWidth : 24 }"
         @finish="onLogin"
       >
+        <a-form-item label="公告">
+          <OptSclPnl
+            class="h-32"
+            :toolbox="false"
+            :line-wrapping="true"
+            :line-numbers="true"
+            :emitter="emitter"
+          />
+        </a-form-item>
+
         <FormItem
           v-for="(mapper, key) of lgnMapper"
           :key="key"
@@ -55,9 +65,7 @@
         >
           <template #extra>
             <a-button type="primary" @click="() => onLogin(regFmState)">前往用户首页</a-button>
-            <a-button @click="onToLoginClick">
-              返回登录页面
-            </a-button>
+            <a-button @click="onToLoginClick">返回登录页面</a-button>
           </template>
         </a-result>
         <a-form
@@ -100,6 +108,8 @@ import { createByFields } from '@lib/types/mapper'
 import { setProp } from '@lib/utils'
 import { genDftFmProps } from '@/utils'
 import { notification } from 'ant-design-vue'
+import OptSclPnl from '@lib/components/OptSclPnl.vue'
+import { TinyEmitter } from 'tiny-emitter'
 
 const router = useRouter()
 const lgnMod = ref(true)
@@ -127,6 +137,7 @@ const authMdl = Object.values(models).find(mdl => mdl._id === project.auth.model
 const regFmState = reactive(genDftFmProps(authMdl?.props || []))
 const regMapper = createByFields(authMdl?.form.fields.map(field => Field.copy(field)) || [])
 const regSucceed = ref(false)
+const emitter = new TinyEmitter()
 
 onMounted(async () => {
   if (localStorage.getItem('token')) {
@@ -143,6 +154,11 @@ onMounted(async () => {
     } else {
       router.replace(`/${project.name}/user_order`)
     }
+  } else {
+    emitter.emit(
+      'message',
+      '预约系统不接受节假日和休息日的预约单，即使下单成功也将被管理员取消，望周知。'
+    )
   }
 })
 

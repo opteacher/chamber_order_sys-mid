@@ -8,6 +8,7 @@
         remove: onRemove
       }"
       sclHeight="h-full"
+      :mapper="mapper"
       :columns="columns"
       :new-fun="() => genDftFmProps(model.props)"
       :emitter="emitter"
@@ -21,6 +22,7 @@
       :addable="table.operable.includes('可增加')"
       :delable="table.operable.includes('可删除')"
       @expand="onRecordExpanded"
+      @before-save="onOrderBefSave"
     >
       <template v-if="mname === 'order'" #extra>
         <a-button @click="onDateTimeSelect">选择时间段</a-button>
@@ -79,10 +81,23 @@
         />
       </template>
       <template #odDtTm="{ record }">
-        {{ dayjs(record.odDtTm).format('YYYY/MM/DD') }}
+        {{ record.odDtTm ? dayjs(record.odDtTm).format('YYYY/MM/DD') : 'invalid date' }}
       </template>
       <template #fkChamber="{ record }">
         {{ record.chamber ? record.chamber.name : '-' }}
+      </template>
+      <template #fkChamberHD="{ column }">
+        {{ column.title }}
+        <a-button
+          v-if="route.query.fkChamber"
+          class="float-right"
+          size="small"
+          type="text"
+          danger
+          @click="onSchChamberClear"
+        >
+          <template #icon><ClearOutlined /></template>
+        </a-button>
       </template>
       <template #fkUser="{ record }">
         {{ record.user ? `${record.user.name} / ${record.user.phone}` : '-' }}
@@ -94,12 +109,44 @@
         <div :id="record.name" class="w-full h-64" />
       </template>
       <template v-if="mname === 'order'" #status="{ record }">
-        {{ getOrderCurStatus(record) || '-' }}
+        <a-tag :color="statusColor[getOrderCurStatus(record)]">
+          {{ getOrderCurStatus(record) || '-' }}
+        </a-tag>
       </template>
-      <template #operOrder>
+      <template v-if="mname === 'order'" #statusEDT="{ editing }">
+        <a-select
+          :options="Object.keys(statusColor).map(state => ({ label: state, value: state }))"
+          v-model:value="editing.state"
+        />
+      </template>
+      <template v-if="mname === 'order'" #statusVW="{ current }">
+        <ul class="list-none pl-0">
+          <li v-for="state of current.status">
+            【{{ state[0] }}】&nbsp;更新于：{{ state[1].format('YYYY/MM/DD HH:mm:ss') }}
+          </li>
+        </ul>
+      </template>
+      <template #operOrder="{ record }">
         <div class="flex space-x-2">
-          <a-button type="primary" ghost size="small" @click.stop="">开始使用</a-button>
-          <a-button type="primary" ghost size="small" @click.stop="" danger>失效</a-button>
+          <a-button
+            v-if="!['进行中', '已失效'].includes(getOrderCurStatus(record))"
+            type="primary"
+            ghost
+            size="small"
+            @click.stop="() => onOrderStartUse(record)"
+          >
+            开始使用
+          </a-button>
+          <a-button
+            v-if="!['已失效'].includes(getOrderCurStatus(record))"
+            type="primary"
+            ghost
+            size="small"
+            @click.stop="() => onOrderCancel(record)"
+            danger
+          >
+            失效
+          </a-button>
         </div>
       </template>
       <template #detail="{ record }">
@@ -126,9 +173,9 @@
 import { watch, ref, onMounted, reactive, createVNode } from 'vue'
 import MainLayout from '@/layouts/main.vue'
 import models from '@/jsons/models.json'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { TinyEmitter as Emitter } from 'tiny-emitter'
-import { createByFields } from '@lib/types/mapper'
+import Mapper, { createByFields } from '@lib/types/mapper'
 import api from '@/apis/model'
 import {
   genDftFmProps,
@@ -136,15 +183,17 @@ import {
   getOrderCurStatus,
   orderStatusToChartData,
   numToClock,
-  formatOfYearMonth
+  formatOfYearMonth,
+  dtTmFmt,
+  sysConf,
+  getSysConf
 } from '@/utils'
 import Column from '@lib/types/column'
 import Model from '@/types/bases/model'
 import Table from '@/types/bases/table'
 import dayjs from 'dayjs'
 import minMax from 'dayjs/plugin/minMax'
-import Order from '@/types/order'
-import Config from '@/types/config'
+import Order, { OrderStatus, statusColor } from '@/types/order'
 import _ from 'lodash'
 import Chamber from '@/types/chamber'
 import User from '@/types/user'
@@ -152,7 +201,7 @@ import orderStatus from '@/jsons/orderStatus.json'
 import * as echarts from 'echarts'
 import 'dayjs/locale/zh-cn'
 import MpvueCalendar from 'mpvue-calendar'
-import { ExclamationCircleOutlined, InfoCircleOutlined } from '@ant-design/icons-vue'
+import { ExclamationCircleOutlined, InfoCircleOutlined, ClearOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
 import project from '@/jsons/project.json'
 
@@ -160,12 +209,13 @@ dayjs.locale('zh-cn')
 dayjs.extend(minMax)
 
 const route = useRoute()
+const router = useRouter()
 const mname = ref<string>('')
 const model = reactive<Model>(new Model())
 const table = reactive<Table>(new Table())
 const columns = ref<Column[]>([])
+const mapper = ref<Mapper>(new Mapper())
 const emitter = new Emitter()
-const sysConf = reactive(new Config())
 const orderOptions = reactive({
   visible: false,
   yearMonth: [dayjs().year(), dayjs().month() + 1] as [number, number],
@@ -179,6 +229,7 @@ const copies = {
 
 onMounted(refresh)
 watch(() => route.params.mname, refresh)
+// onUpdated(refresh)
 
 async function refresh() {
   await getSysConf()
@@ -186,7 +237,8 @@ async function refresh() {
   Model.copy((models as any)[mname.value], model)
   Table.copy(model.table, table)
   columns.value = table.columns.map((col: any) => Column.copy(col))
-  emitter.emit('update:mapper', createByFields(model.form.fields))
+  mapper.value = createByFields(model.form.fields)
+  emitter.emit('update:mapper', mapper.value)
   if (mname.value === 'order' && route.query.fkChamber) {
     emitter.emit('search', route.query)
   }
@@ -262,15 +314,6 @@ function recuJsonFuncs(json: any, params: any) {
   }
   return json
 }
-async function getSysConf() {
-  const result = await api.all('config', { copy: Config.copy })
-  Config.copy(
-    !result.length ? await api.add('config', sysConf, { copy: Config.copy }) : result[0],
-    sysConf,
-    true
-  )
-  return sysConf
-}
 function allDates(year: number, month: number) {
   const monthMapper = Object.assign(
     {
@@ -289,7 +332,7 @@ function defaultSelDates(year: number, month: number) {
     .filter(str => str)
 }
 async function onDateTimeSelect() {
-  const sysConf = await getSysConf()
+  await getSysConf()
   sysConf.orderPoints = sysConf.orderPoints
   const nowDate = dayjs()
   onMonthChange(nowDate.year(), nowDate.month() + 1)
@@ -345,6 +388,40 @@ function onOrderableSwitch(checked: boolean) {
     content: createVNode('div', { class: 'text-red-500' }, '开启关闭服务后客户端页面需要刷新'),
     onOk: () => api.update('config', sysConf.key, { orderOnOff: checked })
   })
+}
+function onOrderStartUse(order: Order) {
+  updateOrderStatus(order.key, '进行中', '确定开始使用氧舱？', '请确保申请人已到并使用后再确认！')
+}
+async function onSchChamberClear() {
+  emitter.emit('search', { fkChamber: '' })
+  router.push(`/${project.name}/model/order`).then(refresh)
+}
+function onOrderCancel(order: Order) {
+  updateOrderStatus(order.key, '已失效', '确定失效该订单？')
+}
+function updateOrderStatus(odKey: any, status: OrderStatus, title: string, content?: string) {
+  Modal.confirm({
+    title,
+    icon: createVNode(ExclamationCircleOutlined),
+    content: content ? createVNode('div', { class: 'text-red-500' }, content) : undefined,
+    onOk: () =>
+      api
+        .update(
+          'order',
+          odKey,
+          { status: `${status}|${dayjs().format(dtTmFmt)}` },
+          { axiosConfig: { params: { _updMode: 'append' } } }
+        )
+        .then(refresh)
+  })
+}
+function onOrderBefSave(order: Order) {
+  if (mname.value === 'order') {
+    order.status = [
+      ...order.status.map(state => `${state[0]}|${state[1].format(dtTmFmt)}`),
+      [order.state, dayjs().format(dtTmFmt)].join('|')
+    ] as any
+  }
 }
 </script>
 

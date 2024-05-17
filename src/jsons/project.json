@@ -290,7 +290,7 @@
   "middle": {
     "lclDep": true,
     "prefix": "",
-    "login": { "width": 50, "registerable": true, "_id": "663983401a109cf69d8f8879" },
+    "login": { "width": 50, "registerable": true, "title": "高压氧舱预约系统", "_id": "663983401a109cf69d8f8879" },
     "navigate": { "path": "/home", "theme": "dark", "logo": "", "_id": "66397ce01a109cf69d8f7860" },
     "dashboard": {
       "bkgdColor": "#FFFFFF",

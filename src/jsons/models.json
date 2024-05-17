@@ -228,7 +228,7 @@
       {
         "name": "status",
         "label": "订单状态",
-        "ptype": "String",
+        "ptype": "Array",
         "index": false,
         "unique": false,
         "visible": true,
@@ -239,7 +239,7 @@
           "_id": "663dd380c510aebb490dfcf9"
         },
         "remark": "未到时、已过期、进行中、已失效",
-        "dftVal": "",
+        "dftVal": [],
         "_id": "663dd380c510aebb490dfcf8"
       }
     ],
@@ -266,7 +266,9 @@
           "rules": [],
           "refer": "odDtTm",
           "placeholder": "",
-          "extra": {},
+          "extra": {
+            "showTime": false
+          },
           "_id": "6639847e1a109cf69d8f8af1"
         },
         {
@@ -293,7 +295,7 @@
           "label": "订单状态",
           "ftype": "Select",
           "rules": [],
-          "refer": "status",
+          "refer": "state",
           "_id": "663dd380c510aebb490dfcfa",
           "extra": {
             "options": [
@@ -338,7 +340,7 @@
           "dataIndex": "fkChamber",
           "group": [],
           "align": "left",
-          "searchable": true,
+          "searchable": false,
           "filterable": false,
           "notDisplay": false,
           "_id": "6639847e1a109cf69d8f8af5"
@@ -428,7 +430,7 @@
           "_id": "6639847e1a109cf69d8f8afc"
         },
         {
-          "refer": "status",
+          "refer": "state",
           "cdCell": {},
           "color": "#000000",
           "prefix": "",
