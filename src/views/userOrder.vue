@@ -197,6 +197,7 @@ const orderConfm = reactive({
           .map(([dtTm, order]) => (dtTm.startsWith(strDate) ? order : null))
           .filter(order => order) as Order[]
         const dsbPoints = orders.map(order => order.duration)
+        orderConfm.emitter.emit('update:dprop', { duration: null })
         orderConfm.emitter.emit('update:mprop', {
           'duration.options': orderPoints.map(idx => ({
             label: numToClock(idx, true),
