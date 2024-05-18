@@ -5,6 +5,7 @@ import Order, { OrderStatus } from './types/order'
 import Config from './types/config'
 import api from '@/apis/model'
 import { reactive } from 'vue'
+import dayjs from 'dayjs'
 
 export function genDftFmProps(props: any[]) {
   const ret = {} as Record<string, any>
@@ -53,23 +54,14 @@ const orderStatusColors = {
 export function orderStatusToChartData(orders: Order[]) {
   const ret = []
   for (const order of orders) {
-    for (let i = 0; i < order.status.length; ++i) {
-      const state = order.status[i]
-      console.log(state)
-      ret.push({
-        name: state[0],
-        value: [
-          order.key,
-          state[1].add(order.duration, 'hour').toDate(),
-          i !== order.status.length - 1
-            ? order.status[i + 1][1].toDate()
-            : state[1].add(10, 'minute')
-        ],
-        itemStyle: {
-          color: orderStatusColors[state[0]]
-        }
-      })
-    }
+    const start = order.odDtTm.startOf('day').add(order.duration, 'hour')
+    ret.push({
+      name: order.lastState,
+      value: [order.key, start.toDate(), start.add(0.5, 'minute').toDate(), 30],
+      itemStyle: {
+        color: orderStatusColors[order.lastState]
+      }
+    })
   }
   return ret
 }

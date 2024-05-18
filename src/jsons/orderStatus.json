@@ -38,8 +38,9 @@
   },
   "xAxis": {
     "type": "time",
-    "max": "return dayjs.max(orders.map(order => order.status.map(state => state[1].add(order.duration, 'hour'))).flat())",
-    "min": "return dayjs.min(orders.map(order => order.status.map(state => state[1])).flat())"
+    "scale": true,
+    "max": "return dayjs.max(orders.map(order => order.odDtTm.add(1, 'day'))).toDate()",
+    "min": "return dayjs.min(orders.map(order => order.odDtTm.subtract(1, 'day'))).toDate()"
   },
   "yAxis": {
     "data": "return [chamber.name]"

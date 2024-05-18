@@ -163,7 +163,6 @@ const emitter = new TinyEmitter()
 onMounted(async () => {
   if (localStorage.getItem('token')) {
     const result = await api.verifyDeep()
-    console.log(result)
     if (result.error || !result.message) {
       notification.error({
         message: result.error || '未知错误，没有消息分量！'
@@ -185,7 +184,6 @@ onMounted(async () => {
 
 async function onLogin(values: any) {
   const result = await api.login(values)
-  console.log(result.record.role)
   if (result.token && result.record) {
     localStorage.setItem('token', result.token)
     if (result.record.role === 'admin') {

@@ -288,9 +288,8 @@ async function onRecordExpanded(record: any) {
     const chamber = record as Chamber
     const orders = (await api.all('order', {
       copy: Order.copy,
-      axiosConfig: { params: { _ext: true, fkChamber: chamber.key } }
+      axiosConfig: { params: { fkChamber: chamber.key } }
     })) as Order[]
-    console.log(orders)
     const options = recuJsonFuncs(orderStatus, {
       renderItem,
       orderStatusToChartData,
