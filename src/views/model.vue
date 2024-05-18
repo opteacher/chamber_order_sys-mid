@@ -103,7 +103,7 @@
         {{ record.user ? `${record.user.name} / ${record.user.phone}` : '-' }}
       </template>
       <template #duration="{ record }">
-        {{ record.duration }}:00 ~ {{ record.duration + 1 }}:00
+        {{ numToClock(record.duration, true) }}
       </template>
       <template v-if="mname === 'chamber'" #expandedRowRender="{ record }">
         <div :id="record.name" class="w-full h-64" />

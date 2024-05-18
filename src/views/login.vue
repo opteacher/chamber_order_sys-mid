@@ -49,11 +49,21 @@
         </a-form-item>
 
         <a-form-item>
-          <a-button type="primary" html-type="submit">登录</a-button>
-          <template v-if="lgnProps.registerable">
-            &nbsp;或&nbsp;
-            <a href="#" @click="switchLgnMod">前往注册</a>
+          <template #label>
+            <a-tooltip>
+              <template #title>修复浏览器环境</template>
+              <a-button type="text" @click="onFixBrowserClick">
+                <template #icon><ToolOutlined /></template>
+              </a-button>
+            </a-tooltip>
           </template>
+          <div class="text-center">
+            <a-button type="primary" html-type="submit">登录</a-button>
+            <template v-if="lgnProps.registerable">
+              &nbsp;或&nbsp;
+              <a href="#" @click="switchLgnMod">前往注册</a>
+            </template>
+          </div>
         </a-form-item>
       </a-form>
       <template v-else>
@@ -85,9 +95,19 @@
           />
 
           <a-form-item>
-            <a-button type="primary" html-type="submit">注册</a-button>
-            &nbsp;已有账户&nbsp;
-            <a href="#" @click="switchLgnMod">前往登录</a>
+            <div class="text-center">
+              <a-button type="primary" html-type="submit">注册</a-button>
+              &nbsp;已有账户&nbsp;
+              <a href="#" @click="switchLgnMod">前往登录</a>
+            </div>
+            <template #label>
+              <a-tooltip>
+                <template #title>修复浏览器环境</template>
+                <a-button type="text" @click="onFixBrowserClick">
+                  <template #icon><ToolOutlined /></template>
+                </a-button>
+              </a-tooltip>
+            </template>
           </a-form-item>
         </a-form>
       </template>
@@ -107,9 +127,10 @@ import models from '@/jsons/models.json'
 import { createByFields } from '@lib/types/mapper'
 import { pickOrIgnore, setProp } from '@lib/utils'
 import { genDftFmProps } from '@/utils'
-import { notification } from 'ant-design-vue'
+import { message, notification } from 'ant-design-vue'
 import OptSclPnl from '@lib/components/OptSclPnl.vue'
 import { TinyEmitter } from 'tiny-emitter'
+import { ToolOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter()
 const lgnMod = ref(true)
@@ -203,5 +224,9 @@ function onToLoginClick() {
   router.replace(`/${project.name}/login`)
   lgnMod.value = true
   regSucceed.value = false
+}
+function onFixBrowserClick() {
+  localStorage.clear()
+  message.success('修复成功！')
 }
 </script>

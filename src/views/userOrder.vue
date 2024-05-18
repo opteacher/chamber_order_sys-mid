@@ -179,15 +179,15 @@ const orderConfm = reactive({
             (sysConf.odAvaDates.includes('!' + strDate) || isWeekend))
         )
       },
-      onChange: (_: any, date?: Dayjs) => {
+      onChange: (_unuse: any, date?: Dayjs) => {
         if (!date) {
           orderConfm.emitter.emit('update:mprop', { 'duration.options': [] })
           return
         }
         const dateNow = dayjs.tz()
-        let orderPoints = sysConf.orderPoints.length
-          ? sysConf.orderPoints.sort((a, b) => a - b)
-          : allPoints
+        let orderPoints = _.clone(
+          sysConf.orderPoints.length ? sysConf.orderPoints.sort((a, b) => a - b) : allPoints
+        )
         if (date.isSame(dateNow, 'day')) {
           const curPoint = dateNow.hour() + (dateNow.minute() > 30 ? 0.5 : 0)
           orderPoints = orderPoints.filter(point => point > curPoint)
@@ -196,11 +196,13 @@ const orderConfm = reactive({
         const orders = Object.entries(orderConfm.datetimes)
           .map(([dtTm, order]) => (dtTm.startsWith(strDate) ? order : null))
           .filter(order => order) as Order[]
-        for (const order of orders) {
-          orderPoints.splice(orderPoints.indexOf(order?.duration), 1)
-        }
+        const dsbPoints = orders.map(order => order.duration)
         orderConfm.emitter.emit('update:mprop', {
-          'duration.options': orderPoints.map(idx => ({ label: numToClock(idx, true), value: idx }))
+          'duration.options': orderPoints.map(idx => ({
+            label: numToClock(idx, true),
+            value: idx,
+            disabled: dsbPoints.includes(idx)
+          }))
         })
       }
     },
