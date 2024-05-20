@@ -5,7 +5,7 @@
   },
   "color": ["#faad14", "#f50", "#108ee9", "rgba(0, 0, 0, 0.15)"],
   "tooltip": {
-    "formatter": "return (params) => `${params.marker}${params.name}：${params.value[3]}分钟`"
+    "formatter": "return (params) => `${params.marker}${params.name} - ${dayjs(params.value[1]).format('YYYY/MM/DD HH:mm')}`"
   },
   "legend": {
     "data": ["未到时", "已过期", "进行中", "已失效"],
