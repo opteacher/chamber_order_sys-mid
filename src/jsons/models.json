@@ -96,7 +96,7 @@
       "hasPages": true,
       "refresh": [],
       "operable": ["可增加", "可编辑", "可删除"],
-      "imExport": true,
+      "imExport": false,
       "columns": [
         {
           "title": "舱名",
@@ -333,7 +333,7 @@
       "expandURL": "",
       "expHeight": -1,
       "colDspable": false,
-      "imExport": false,
+      "imExport": true,
       "columns": [
         {
           "title": "高压氧舱",
@@ -799,7 +799,7 @@
       "hasPages": true,
       "refresh": [],
       "operable": ["可增加", "可编辑", "可删除"],
-      "imExport": [],
+      "imExport": false,
       "columns": [
         {
           "title": "名字",

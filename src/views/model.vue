@@ -5,7 +5,10 @@
         all: onGetAll,
         add: onAdd,
         update: onUpdate,
-        remove: onRemove
+        remove: onRemove,
+        batch: {
+          export: onExport
+        }
       }"
       sclHeight="h-full"
       :mapper="mapper"
@@ -203,6 +206,7 @@ import MpvueCalendar from 'mpvue-calendar'
 import { ExclamationCircleOutlined, InfoCircleOutlined, ClearOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
 import project from '@/jsons/project.json'
+import BchEpt from '@/types/bases/bchExport'
 
 dayjs.locale('zh-cn')
 dayjs.extend(minMax)
@@ -233,8 +237,8 @@ watch(() => route.params.mname, refresh)
 async function refresh() {
   await getSysConf()
   mname.value = route.params.mname as string
-  Model.copy((models as any)[mname.value], model)
-  Table.copy(model.table, table)
+  Model.copy((models as any)[mname.value], model, true)
+  Table.copy(model.table, table, true)
   columns.value = table.columns.map((col: any) => Column.copy(col))
   mapper.value = createByFields(model.form.fields)
   emitter.emit('update:mapper', mapper.value)
@@ -421,6 +425,9 @@ function onOrderBefSave(order: Order) {
       [order.lastState, dayjs().format(dtTmFmt)].join('|')
     ] as any
   }
+}
+function onExport(expParams: BchEpt) {
+  console.log(expParams)
 }
 </script>
 

@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import { gnlCpy } from '@/utils'
 import Cell from './cell'
 import Column from '@lib/types/column'
+import _ from 'lodash'
 
 export class Cells extends Cell {
   selCond: string
@@ -49,7 +51,7 @@ export default class Table {
   expandURL: string
   expHeight: number
   colDspable: boolean
-  imExport: string[]
+  imExport: boolean | object
 
   constructor() {
     this.key = ''
@@ -67,7 +69,7 @@ export default class Table {
     this.expandURL = ''
     this.expHeight = -1
     this.colDspable = false
-    this.imExport = []
+    this.imExport = false
   }
 
   reset() {
@@ -86,31 +88,24 @@ export default class Table {
     this.expandURL = ''
     this.expHeight = -1
     this.colDspable = false
-    this.imExport = []
+    this.imExport = false
   }
 
   static copy(src: any, tgt?: Table, force = false): Table {
-    tgt = tgt || new Table()
-    tgt.key = src.key || src._id || tgt.key
-    tgt.title = force ? src.title : src.title || tgt.title
-    tgt.desc = force ? src.desc : src.desc || tgt.desc
-    tgt.operaStyle = force ? src.operaStyle : src.operaStyle || tgt.operaStyle
-    tgt.size = force ? src.size : src.size || tgt.size
-    tgt.hasPages = typeof src.hasPages !== 'undefined' ? src.hasPages : force ? false : tgt.hasPages
-    tgt.maxPerPgs = force ? src.maxPerPgs : src.maxPerPgs || tgt.maxPerPgs
-    tgt.demoData = src.demoData
-    tgt.columns = src.columns ? src.columns.map((col: any) => Column.copy(col)) : []
-    tgt.cells = (src.cells || []).map((cell: any) => Cells.copy(cell))
-    tgt.operable = force ? src.operable : src.operable || tgt.operable
-    tgt.refresh = force ? src.refresh : src.refresh || tgt.refresh
-    tgt.expandURL = force ? src.expandURL : src.expandURL || tgt.expandURL
-    tgt.expHeight = force ? src.expHeight : src.expHeight || tgt.expHeight
-    tgt.colDspable = force
-      ? src.colDspable
-      : typeof src.colDspable !== 'undefined'
-      ? src.colDspable
-      : tgt.colDspable
-    tgt.imExport = force ? src.imExport || [] : src.imExport || tgt.imExport
+    tgt = gnlCpy(Table, src, tgt, {
+      force,
+      cpyMapper: { columns: Column.copy, cells: Cells.copy },
+      ignProps: ['imExport']
+    })
+    if (typeof src.imExport !== 'undefined') {
+      if (typeof src.imExport === 'boolean') {
+        tgt.imExport = src.imExport
+      } else {
+        tgt.imExport = _.cloneDeep(src.imExport)
+      }
+    } else if (force) {
+      tgt.imExport = false
+    }
     return tgt
   }
 }

@@ -292,11 +292,11 @@ function onCancelOrder(order: Order) {
         'order',
         order.key,
         {
-          status: ['已失效', dayjs().format(dtTmFmt)].join('|'),
-          lastState: '已失效'
+          status: ['已失效', dayjs().format(dtTmFmt)].join('|')
         },
         { axiosConfig: { params: { _updMode: 'append' } } }
       )
+      await api.update('order', order.key, { lastState: '已失效' })
       await api.update('chamber', order.fkChamber, { status: '运行中' })
       await refresh()
     }
