@@ -1,4 +1,3 @@
-import { ArrowHlfHgt } from '@/views/Flow'
 import Node from './node'
 
 export default class NodeInPnl extends Node {
@@ -8,7 +7,7 @@ export default class NodeInPnl extends Node {
   constructor() {
     super()
     this.posLT = [0, 0]
-    this.btmSvgHgt = ArrowHlfHgt
+    this.btmSvgHgt = 60
   }
 
   static copy(src: any, tgt?: NodeInPnl): NodeInPnl {

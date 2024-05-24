@@ -75,7 +75,7 @@
           </a-form>
         </a-modal>
       </template>
-      <template v-else-if="mname === 'chamber'" #extra>
+      <template v-if="mname === 'chamber'" #extra>
         <a-switch
           v-model:checked="sysConf.orderOnOff"
           checked-children="开启预约"
@@ -206,7 +206,7 @@ import MpvueCalendar from 'mpvue-calendar'
 import { ExclamationCircleOutlined, InfoCircleOutlined, ClearOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
 import project from '@/jsons/project.json'
-import BchEpt from '@/types/bases/bchExport'
+import BchEpt from '@lib/types/bchExport'
 
 dayjs.locale('zh-cn')
 dayjs.extend(minMax)

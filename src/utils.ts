@@ -1,11 +1,10 @@
 export * from '@lib/utils'
 import { bsTpDefault } from '@lib/types'
 import * as echarts from 'echarts'
-import Order, { OrderStatus } from './types/order'
+import Order from './types/order'
 import Config from './types/config'
 import api from '@/apis/model'
 import { reactive } from 'vue'
-import dayjs from 'dayjs'
 
 export function genDftFmProps(props: any[]) {
   const ret = {} as Record<string, any>

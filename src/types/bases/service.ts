@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import dayjs, { Dayjs } from 'dayjs'
 
-import { gnlCpy } from '../utils'
+import { gnlCpy } from '@lib/utils'
 import Node from './node'
 import Variable from './variable'
 

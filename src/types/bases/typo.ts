@@ -1,6 +1,5 @@
 import { gnlCpy } from '@/utils'
 
-import Dep from './dep'
 import Node from './node'
 import Property from './property'
 
