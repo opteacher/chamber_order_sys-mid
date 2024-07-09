@@ -5,6 +5,7 @@ import project from './src/jsons/project.json'
 
 // https://vitejs.dev/config/
 export default ({ mode }) => defineConfig({
+  base: '/chamber_order_sys',
   plugins: [vue()],
   resolve: {
     alias: {

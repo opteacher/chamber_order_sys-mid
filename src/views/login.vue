@@ -4,7 +4,7 @@
     :style="{
       'justify-content': lgnProps.align,
       'background-color': lgnProps.bkgdColor,
-      'background-image': 'url(\'/src/assets/5c886206d1b40.jpg\')'
+      'background-image': `url(\'${bkgdImgUrl}\')`
     }"
   >
     <div
@@ -131,6 +131,7 @@ import { message, notification } from 'ant-design-vue'
 import OptSclPnl from '@lib/components/OptSclPnl.vue'
 import { TinyEmitter } from 'tiny-emitter'
 import { ToolOutlined } from '@ant-design/icons-vue'
+import bkgdImgUrl from '../assets/chamber_order_sys/5c886206d1b40.jpg'
 
 const router = useRouter()
 const lgnMod = ref(true)

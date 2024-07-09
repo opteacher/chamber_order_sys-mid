@@ -22,4 +22,6 @@ axios.interceptors.request.use(
   }
 )
 
+axios.defaults.baseURL = import.meta.env.BASE_URL || undefined
+
 createApp(App).use(router).use(Antd).use(MyLib).use(createPinia()).mount('#app')
