@@ -1,0 +1,35 @@
+services:
+  mongo:
+    image: mongo
+    container_name: chamber_order_sys_mongo
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 12345
+    volumes:
+      - /data/chamber_order_sys/mongo/db:/data/db
+      - /data/chamber_order_sys/mongo/config:/data/config
+
+  mysql:
+    image: mysql
+    container_name: chamber_order_sys_mysql
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:3306:3306
+    enironment:
+      MYSQL_ROOT_PASSWORD: 12345
+    volumes:
+      - /data/chamber_order_sys/mysql:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+  default:
+    image: chamber_order_sys
+    container_name: chamber_order_sys_default
+    privileged: true
+    ports:
+      - 0.0.0.0:8580:8580
+    depends_on:
+      - mysql
+      - mongo

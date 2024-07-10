@@ -16,7 +16,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: `/${project.name}/`,
-    redirect: `/${project.name}/home`
+    redirect: `/${project.name}/model/chamber`
   },
   {
     path: `/${project.name}/home`,

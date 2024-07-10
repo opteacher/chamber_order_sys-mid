@@ -26,7 +26,7 @@
           theme="dark"
           @click="onMuItmSelect"
         >
-          <a-menu-item key="home">首页</a-menu-item>
+          <!-- <a-menu-item key="home">首页</a-menu-item> -->
           <a-menu-item v-for="model in sdNavMdls" :key="`model/${model.name}`">
             {{ model.label }}
           </a-menu-item>
