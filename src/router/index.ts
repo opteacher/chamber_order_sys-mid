@@ -8,6 +8,7 @@ import Home from '@/views/home.vue'
 import user from '@/views/user.vue'
 import userOrder from '@/views/userOrder.vue'
 import userProfile from '@/views/userProfile.vue'
+import pubAnno from '@/views/pubAnno.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -28,6 +29,12 @@ const routes: Array<RouteRecordRaw> = [
     path: `/${project.name}/model/:mname`,
     name: 'model',
     component: Model,
+    meta: { reqLogin: true }
+  },
+  {
+    path: `/${project.name}/pubAnno`,
+    name: 'pubAnno',
+    component: pubAnno,
     meta: { reqLogin: true }
   },
   {

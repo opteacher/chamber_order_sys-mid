@@ -30,6 +30,7 @@
           <a-menu-item v-for="model in sdNavMdls" :key="`model/${model.name}`">
             {{ model.label }}
           </a-menu-item>
+          <a-menu-item key="pubAnno">公告</a-menu-item>
         </a-menu>
       </a-layout-sider>
       <a-layout>

@@ -176,6 +176,7 @@ onMounted(async () => {
       router.replace(`/${project.name}/user_order`)
     }
   } else {
+    console.log(await mdlAPI.all('config'))
     emitter.emit(
       'message',
       '预约系统不接受节假日和休息日的预约单，即使下单成功也将被管理员取消，望周知。'

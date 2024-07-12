@@ -46,6 +46,7 @@ const updateMod = ref(false)
 
 onMounted(async () => {
   const { payload } = await lgnAPI.verify()
+  console.log(await api.get('user', payload.sub))
   User.copy(await api.get('user', payload.sub), curUser)
 })
 

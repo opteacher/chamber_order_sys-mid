@@ -1,7 +1,7 @@
 {
   "_id": "66397ce01a109cf69d8f785a",
   "name": "chamber_order_sys",
-  "desc": "高压氧舱预约系统",
+  "desc": "微高压氧舱预约系统",
   "port": 8580,
   "volumes": [],
   "thread": 569,

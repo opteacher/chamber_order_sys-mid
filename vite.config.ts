@@ -2,11 +2,33 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import project from './src/jsons/project.json'
+import legacy from '@vitejs/plugin-legacy'
 
 // https://vitejs.dev/config/
 export default ({ mode }) => defineConfig({
-  base: '/chamber_order_sys',
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    legacy({
+      targets: [
+        "> 1%, last 1 version, ie >= 11",
+        "safari >= 10",
+        "Android > 39",
+        "Chrome >= 60",
+        "Safari >= 10.1",
+        "iOS >= 10.3",
+        "Firefox >= 54",
+        "Edge >= 15"
+      ],
+      additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
+      polyfills: ["es.promise.finally", "es/map", "es/set"],
+      modernPolyfills: ["es.promise.finally"]
+    })
+  ],
+  esbuild: {
+    supported: {
+      bigint: true
+    }
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
