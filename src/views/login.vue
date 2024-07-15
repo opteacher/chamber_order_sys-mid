@@ -132,6 +132,7 @@ import OptSclPnl from '@lib/components/OptSclPnl.vue'
 import { TinyEmitter } from 'tiny-emitter'
 import { ToolOutlined } from '@ant-design/icons-vue'
 import bkgdImgUrl from '../assets/chamber_order_sys/5c886206d1b40.jpg'
+import Config from '@/types/config'
 
 const router = useRouter()
 const lgnMod = ref(true)
@@ -176,11 +177,13 @@ onMounted(async () => {
       router.replace(`/${project.name}/user_order`)
     }
   } else {
-    console.log(await mdlAPI.all('config'))
-    emitter.emit(
-      'message',
-      '预约系统不接受节假日和休息日的预约单，即使下单成功也将被管理员取消，望周知。'
-    )
+    const config = await mdlAPI
+      .all('config', { copy: Config.copy })
+      .then(configs => (configs.length ? configs[0] : null))
+    for (const content of config.pubAnnos) {
+      console.log(content)
+      emitter.emit('message', content)
+    }
   }
 })
 
