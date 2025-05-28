@@ -568,6 +568,7 @@
         {
           "label": "警号",
           "ftype": "Input",
+          "display": false,
           "rules": [],
           "refer": "policeId",
           "placeholder": "不是警官可以不填",
@@ -604,12 +605,8 @@
         {
           "label": "单位",
           "ftype": "Cascader",
-          "rules": [
-            {
-              "required": true,
-              "message": "必须选择单位！"
-            }
-          ],
+          "display": false,
+          "rules": [],
           "refer": "unit",
           "extra": {
             "options": [
@@ -810,6 +807,7 @@
         {
           "title": "警号",
           "dataIndex": "policeId",
+          "notDisplay": true,
           "group": [],
           "_id": "6644523b42ac589e83749a57"
         },
@@ -829,6 +827,7 @@
         {
           "title": "单位",
           "dataIndex": "unit",
+          "notDisplay": true,
           "group": [],
           "_id": "663b17530cebf8f77de65fae"
         }

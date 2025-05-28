@@ -34,7 +34,7 @@ const route = useRoute()
 const router = useRouter()
 const userPage = ref('user_order')
 const pageTitles = {
-  user_order: '高压氧舱',
+  user_order: '预约中心',
   user_profile: '用户配置'
 } as any
 

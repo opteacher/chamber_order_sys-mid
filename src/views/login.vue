@@ -8,16 +8,16 @@
     }"
   >
     <div
-      class="px-5 pt-4 max-w-xl"
+      class="px-5 pt-4 w-[80vw]"
       :style="{
         'border-radius': `${lgnProps.radius}px`,
         width: `${lgnProps.width}%`,
         'background-color': lgnProps.fmBkgdColor
       }"
     >
-      <h1 class="text-2xl text-center mb-5">
+      <a-typography-title class="text-center">
         {{ lgnProps.title }}
-      </h1>
+      </a-typography-title>
       <a-form
         v-if="lgnMod"
         :model="formState"
@@ -25,16 +25,6 @@
         :wrapper-col="{ span: lgnProps.hasLabel ? 24 - lgnProps.lblWidth : 24 }"
         @finish="onLogin"
       >
-        <a-form-item label="公告">
-          <OptSclPnl
-            class="h-32"
-            :toolbox="false"
-            :line-wrapping="true"
-            :line-numbers="true"
-            :emitter="emitter"
-          />
-        </a-form-item>
-
         <FormItem
           v-for="(mapper, key) of lgnMapper"
           :key="key"
@@ -50,12 +40,10 @@
 
         <a-form-item>
           <template #label>
-            <a-tooltip>
-              <template #title>修复浏览器环境</template>
-              <a-button type="text" @click="onFixBrowserClick">
-                <template #icon><ToolOutlined /></template>
-              </a-button>
-            </a-tooltip>
+            <a-button type="text" @click="onFixBrowserClick">
+              <template #icon><ToolOutlined /></template>
+              修复浏览器环境
+            </a-button>
           </template>
           <div class="text-center">
             <a-button type="primary" html-type="submit">登录</a-button>
@@ -101,12 +89,10 @@
               <a href="#" @click="switchLgnMod">前往登录</a>
             </div>
             <template #label>
-              <a-tooltip>
-                <template #title>修复浏览器环境</template>
-                <a-button type="text" @click="onFixBrowserClick">
-                  <template #icon><ToolOutlined /></template>
-                </a-button>
-              </a-tooltip>
+              <a-button type="text" @click="onFixBrowserClick">
+                <template #icon><ToolOutlined /></template>
+                修复浏览器环境
+              </a-button>
             </template>
           </a-form-item>
         </a-form>
@@ -128,7 +114,6 @@ import { createByFields } from '@lib/types/mapper'
 import { pickOrIgnore, setProp } from '@lib/utils'
 import { genDftFmProps } from '@/utils'
 import { message, notification } from 'ant-design-vue'
-import OptSclPnl from '@lib/components/OptSclPnl.vue'
 import { TinyEmitter } from 'tiny-emitter'
 import { ToolOutlined } from '@ant-design/icons-vue'
 import bkgdImgUrl from '../assets/chamber_order_sys/5c886206d1b40.jpg'

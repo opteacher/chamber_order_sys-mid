@@ -3,7 +3,7 @@
     <div class="h-full flex flex-col">
       <a-divider class="border-slate-300">
         <a-radio-group v-model:value="category" button-style="solid" @change="refresh">
-          <a-radio-button value="available">可用氧舱</a-radio-button>
+          <a-radio-button value="available">医生</a-radio-button>
           <a-badge :count="myOrders.filter(order => order.lastState !== '已失效').length">
             <a-radio-button class="border-l-0 rounded-l-none rounded-r-md" value="ordered">
               我的预约
@@ -23,25 +23,17 @@
             <a-list-item class="hover:bg-slate-200">
               <a-list-item-meta>
                 <template #title>
-                  {{ item.name }}&nbsp;
-                  <a-tag :color="chamberStatColor[item.status as ChamberStatus]">
-                    {{ item.status }}
-                  </a-tag>
+                  {{ item.name }}
                 </template>
               </a-list-item-meta>
               <template #actions>
-                <a-space v-if="allLock" align="baseline">
-                  <InfoCircleOutlined />
-                  {{ !sysConf.orderOnOff ? '预约系统关闭' : '已预约氧舱' }}
-                </a-space>
                 <a-button
-                  v-else
                   type="primary"
                   ghost
                   :disabled="['已停止', '异常'].includes(item.status)"
                   @click="() => onOrder(item)"
                 >
-                  预约
+                  {{ ['已停止', '异常'].includes(item.status) ? '休诊中' : '预约' }}
                 </a-button>
               </template>
             </a-list-item>
@@ -64,7 +56,7 @@
                   </a-tag>
                 </template>
                 <template #description>
-                  {{ item.odDtTm ? item.odDtTm.format('YYYY/MM/DD HH:mm:ss') : 'invalid date' }}
+                  {{ item.odDtTm ? item.odDtTm.format('YYYY/MM/DD HH:mm') : 'invalid date' }}
                 </template>
               </a-list-item-meta>
               <template #actions>
@@ -87,7 +79,7 @@
         </a-list>
       </div>
       <FormDialog
-        title="确定预约该氧舱吗？"
+        title="确定预约该医生吗？"
         icon="ExclamationCircleOutlined"
         width="80vw"
         :mapper="orderConfm.mapper"
@@ -95,6 +87,11 @@
         :newFun="genNewOrder"
         @submit="onOrderConform"
       >
+        <template #chamber="{ formState }">
+          <a-typography-title :level="4" class="mb-0">
+            {{ formState.chamber.length ? formState.chamber[0].name : '' }}
+          </a-typography-title>
+        </template>
         <template #odDtTm="{ formState }">
           <a-date-picker
             class="w-full"
@@ -123,12 +120,10 @@
 <script setup lang="ts">
 import { computed, createVNode, onMounted, reactive, ref } from 'vue'
 import UserLayout from '@/layouts/user.vue'
-import Chamber, { ChamberStatus, statusColor as chamberStatColor } from '@/types/chamber'
+import Chamber from '@/types/chamber'
 import api from '@/apis/model'
 import lgnAPI from '@/apis/login'
 import Order, { OrderStatus, statusColor as orderStatColor } from '@/types/order'
-import models from '@/jsons/models.json'
-import Column from '@lib/types/column'
 import Mapper from '@lib/types/mapper'
 import { TinyEmitter } from 'tiny-emitter'
 import { Modal } from 'ant-design-vue'
@@ -154,16 +149,7 @@ const myOrders = reactive<Order[]>([])
 const orderConfm = reactive({
   mapper: new Mapper({
     chamber: {
-      label: '高压氧舱',
-      type: 'Table',
-      mapper: new Mapper({
-        name: { label: '舱名', type: 'Input' },
-        status: { label: '状态', type: 'Input' }
-      }),
-      columns: models.chamber.table.columns.map(col => Column.copy(col)),
-      addable: false,
-      edtable: false,
-      delable: false
+      type: 'Text'
     },
     odDtTm: {
       label: '预约时间',
@@ -208,7 +194,7 @@ const orderConfm = reactive({
       }
     },
     duration: {
-      label: '使用时段',
+      label: '就诊时段',
       type: 'Select',
       allowClear: true
     }
@@ -239,7 +225,11 @@ orderConfm.emitter.on('show', async (order: Order) => {
 
 async function refresh() {
   loading.value = true
-  chambers.splice(0, chambers.length, ...(await api.all('chamber', { copy: Chamber.copy })))
+  chambers.splice(
+    0,
+    chambers.length,
+    ...(await api.all('chamber', { copy: Chamber.copy, messages: { notShow: true } }))
+  )
   const { payload } = await lgnAPI.verify()
   const orders = (await api.all('order', {
     copy: Order.copy,
@@ -279,6 +269,7 @@ async function onOrderConform(order: Order & { chamber: Chamber[] }, next: Funct
   await api.update('chamber', chamber.key, { status: '已预约' })
   await refresh()
   next()
+  category.value = 'ordered'
 }
 function genNewOrder(chamber: Chamber[] = []) {
   return { odDtTm: null, duration: null, chamber }
