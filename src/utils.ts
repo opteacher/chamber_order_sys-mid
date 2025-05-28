@@ -1,5 +1,5 @@
 export * from '@lib/utils'
-import { bsTpDefault } from '@lib/types'
+import { typeDftVal } from '@lib/types'
 import * as echarts from 'echarts'
 import Order from './types/order'
 import Config from './types/config'
@@ -9,7 +9,7 @@ import { reactive } from 'vue'
 export function genDftFmProps(props: any[]) {
   const ret = {} as Record<string, any>
   for (const prop of props) {
-    ret[prop.name] = bsTpDefault(prop.ptype)
+    ret[prop.name] = typeDftVal(prop.ptype)
   }
   return ret
 }

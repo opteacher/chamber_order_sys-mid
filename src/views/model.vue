@@ -159,7 +159,7 @@
           size="small"
           @click.stop="
             () =>
-              $router.push({
+              router.push({
                 path: `/${project.name}/model/order`,
                 query: { fkChamber: record.key }
               })
