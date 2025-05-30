@@ -56,7 +56,8 @@
                   </a-tag>
                 </template>
                 <template #description>
-                  {{ item.odDtTm ? item.odDtTm.format('YYYY/MM/DD HH:mm') : 'invalid date' }}
+                  {{ item.odDtTm ? item.odDtTm.format('YYYY年MM月DD日') : 'invalid date' }}
+                  （{{ fmtDuration(item.duration) }}）
                 </template>
               </a-list-item-meta>
               <template #actions>
@@ -266,6 +267,7 @@ async function onOrderConform(order: Order & { chamber: Chamber[] }, next: Funct
   await api.link('order', newOrder.key, 'fkChamber', chamber.key)
   const { payload } = await lgnAPI.verify()
   await api.link('order', newOrder.key, 'fkUser', payload.sub)
+  await api.link('chamber', payload.sub, 'fkOrders', newOrder.key)
   await api.update('chamber', chamber.key, { status: '已预约' })
   await refresh()
   next()
@@ -297,5 +299,13 @@ function dateHasOrder(date: Dayjs) {
   return Object.keys(orderConfm.datetimes)
     .map(dtTm => dtTm.split('T')[0])
     .includes(date.format(dateFmt))
+}
+function fmtDuration(duration: number) {
+  console.log(typeof duration)
+  return [fmtTimepoint(duration), fmtTimepoint(duration + 0.5)].join(' - ')
+}
+function fmtTimepoint(timepoint: number) {
+  const hour = Math.floor(timepoint).toString()
+  return hour + (Math.floor(timepoint) !== timepoint ? ':30' : ':00')
 }
 </script>

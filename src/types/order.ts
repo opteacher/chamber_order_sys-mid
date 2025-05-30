@@ -47,7 +47,11 @@ export default class Order {
     tgt = gnlCpy(Order, src, tgt, {
       force,
       ignProps: ['status'],
-      cpyMapper: { chamber: Chamber.copy, user: User.copy }
+      cpyMapper: {
+        chamber: Chamber.copy,
+        user: User.copy,
+        duration: (src: any) => Number.parseFloat(src)
+      }
     })
     if (src.status) {
       tgt.status = src.status.map((stt: string) => {

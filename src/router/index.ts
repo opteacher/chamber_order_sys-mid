@@ -9,6 +9,7 @@ import user from '@/views/user.vue'
 import userOrder from '@/views/userOrder.vue'
 import userProfile from '@/views/userProfile.vue'
 import pubAnno from '@/views/pubAnno.vue'
+import mgrOrder from '@/views/mgrOrder.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -22,46 +23,54 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: `/${project.name}/home`,
     name: 'Home',
-    component: Home,
+    component: () => import('@/views/home.vue'),
     meta: { reqLogin: true }
   },
   {
     path: `/${project.name}/model/:mname`,
     name: 'model',
-    component: Model,
+    component: () => import('@/views/model.vue'),
     meta: { reqLogin: true }
   },
   {
     path: `/${project.name}/pubAnno`,
     name: 'pubAnno',
-    component: pubAnno,
+    component: () => import('@/views/pubAnno.vue'),
     meta: { reqLogin: true }
   },
   {
     path: `/${project.name}/login`,
     name: 'login',
-    component: login
+    component: () => import('@/views/login.vue')
   },
   {
     path: `/${project.name}/user_login`,
     name: 'userLogin',
-    component: user,
+    component: () => import('@/views/user.vue'),
     meta: { reqLogin: true }
   },
   {
     path: `/${project.name}/user_order`,
     name: 'userOrder',
-    component: userOrder
+    component: () => import('@/views/userOrder.vue'),
+    meta: { reqLogin: true }
   },
   {
     path: `/${project.name}/user_profile`,
     name: 'userProfile',
-    component: userProfile
+    component: () => import('@/views/userProfile.vue'),
+    meta: { reqLogin: true }
   },
+  {
+    path: `/${project.name}/manager_order`,
+    name: 'managerOrder',
+    component: () => import('@/views/mgrOrder.vue'),
+    meta: { reqLogin: true }
+  }
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/' + project.name),
   routes
 })
 
@@ -77,10 +86,16 @@ router.beforeEach(async (to, _from, next) => {
         throw new Error(result.error || '鉴权失败，没有载荷！')
       }
       const payload = result.payload
-      if (payload.roles.includes('admin')) {
-        next()
-      } else {
-        next('/chamber_order_sys/user_order')
+      switch (true) {
+        case payload.roles.includes('admin'):
+          next()
+          break
+        case payload.roles.includes('manager'):
+          next('/chamber_order_sys/manager_order')
+          break
+        default:
+          next('/chamber_order_sys/user_order')
+          break
       }
     } catch (e) {
       next({

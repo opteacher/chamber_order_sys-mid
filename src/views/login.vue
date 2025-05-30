@@ -176,10 +176,16 @@ async function onLogin(values: any) {
   const result = await api.login(values)
   if (result.token && result.record) {
     localStorage.setItem('token', result.token)
-    if (result.record.role === 'admin') {
-      router.replace(`/${project.name}/`)
-    } else {
-      router.replace(`/${project.name}/user_order`)
+    switch (result.record.role) {
+      case 'admin':
+        router.replace(`/${project.name}/`)
+        break
+      case 'manager':
+        router.replace(`/${project.name}/manager_order`)
+        break
+      default:
+        router.replace(`/${project.name}/user_order`)
+        break
     }
   }
 }
