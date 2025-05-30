@@ -151,15 +151,12 @@ onMounted(async () => {
   if (localStorage.getItem('token')) {
     const result = await api.verifyDeep()
     if (result.error || !result.message) {
-      notification.error({
-        message: result.error || '未知错误，没有消息分量！'
-      })
       return
     }
     if (result.message.endsWith('admin')) {
-      router.replace(`/${project.name}/`)
+      router.replace('/')
     } else {
-      router.replace(`/${project.name}/user_order`)
+      router.replace('/user_order')
     }
   } else {
     const config = await mdlAPI
@@ -178,13 +175,13 @@ async function onLogin(values: any) {
     localStorage.setItem('token', result.token)
     switch (result.record.role) {
       case 'admin':
-        router.replace(`/${project.name}/`)
+        router.replace('/model/chamber')
         break
       case 'manager':
-        router.replace(`/${project.name}/manager_order`)
+        router.replace('/manager_order')
         break
       default:
-        router.replace(`/${project.name}/user_order`)
+        router.replace('/user_order')
         break
     }
   }
@@ -215,7 +212,7 @@ function switchLgnMod() {
   lgnMod.value = !lgnMod.value
 }
 function onToLoginClick() {
-  router.replace(`/${project.name}/login`)
+  router.replace('/login')
   lgnMod.value = true
   regSucceed.value = false
 }

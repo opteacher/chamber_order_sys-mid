@@ -27,7 +27,6 @@
 import { LogoutOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons-vue'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import project from '@/jsons/project.json'
 import { getSysConf, sysConf } from '@/utils'
 
 const route = useRoute()
@@ -50,7 +49,7 @@ async function refresh() {
 }
 function onLogout() {
   localStorage.removeItem('token')
-  router.replace(`/${project.name}/login`)
+  router.replace('/login')
 }
 function onToPageClick() {
   router.push(userPage.value === 'user_order' ? 'user_profile' : 'user_order')

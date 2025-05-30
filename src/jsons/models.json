@@ -805,13 +805,6 @@
           "_id": "663981121a109cf69d8f8072"
         },
         {
-          "title": "警号",
-          "dataIndex": "policeId",
-          "notDisplay": true,
-          "group": [],
-          "_id": "6644523b42ac589e83749a57"
-        },
-        {
           "title": "登录密码",
           "dataIndex": "password",
           "notDisplay": true,
@@ -823,6 +816,20 @@
           "dataIndex": "phone",
           "group": [],
           "_id": "663981301a109cf69d8f81bc"
+        },
+        {
+          "title": "角色",
+          "dataIndex": "role",
+          "notDisplay": false,
+          "group": [],
+          "_id": "1"
+        },
+        {
+          "title": "绑定医生",
+          "dataIndex": "policeId",
+          "notDisplay": false,
+          "group": [],
+          "_id": "2"
         },
         {
           "title": "单位",

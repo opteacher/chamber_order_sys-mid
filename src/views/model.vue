@@ -160,7 +160,7 @@
           @click.stop="
             () =>
               router.push({
-                path: `/${project.name}/model/order`,
+                path: '/model/order',
                 query: { fkChamber: record.key }
               })
           "
@@ -168,7 +168,49 @@
           查看预约单
         </a-button>
       </template>
+      <template v-if="mname === 'user'" #policeId="{ record }">
+        <template v-if="record.role !== 'manager'">
+          <template v-if="record.policeId">
+            <template v-if="record.docName">{{ record.docName }}</template>
+            <a-button
+              v-else
+              @click="
+                async () =>
+                  (record.docName = await api
+                    .get('chamber', record.policeId)
+                    .then((chamber: any) => chamber.name))
+              "
+            >
+              查看医生：{{ record.policeId }}
+            </a-button>
+          </template>
+          <a-button
+            v-else
+            type="primary"
+            @click="() => bindDocEmitter.emit('update:visible', true)"
+          >
+            绑定医生
+          </a-button>
+        </template>
+        <template v-else>{{ record.policeId }}</template>
+      </template>
     </EditableTable>
+    <FormDialog
+      title="绑定医生"
+      width="20vw"
+      :mapper="
+        new Mapper({
+          docId: {
+            label: '医生ID',
+            type: 'Select'
+          }
+        })
+      "
+      :newFun="() => ({ docId: undefined })"
+      :emitter="bindDocEmitter"
+      @update:visible="onBindDocShow"
+      @submit="onBindDocSubmit"
+    />
   </MainLayout>
 </template>
 
@@ -177,7 +219,7 @@ import { watch, ref, onMounted, reactive, createVNode } from 'vue'
 import MainLayout from '@/layouts/main.vue'
 import models from '@/jsons/models.json'
 import { useRoute, useRouter } from 'vue-router'
-import { TinyEmitter as Emitter } from 'tiny-emitter'
+import { TinyEmitter as Emitter, TinyEmitter } from 'tiny-emitter'
 import Mapper, { createByFields } from '@lib/types/mapper'
 import api from '@/apis/model'
 import {
@@ -205,8 +247,8 @@ import 'dayjs/locale/zh-cn'
 import MpvueCalendar from 'mpvue-calendar'
 import { ExclamationCircleOutlined, InfoCircleOutlined, ClearOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
-import project from '@/jsons/project.json'
 import BchEpt from '@lib/types/bchExport'
+import lgnAPI from '@/apis/login'
 
 dayjs.locale('zh-cn')
 dayjs.extend(minMax)
@@ -229,6 +271,7 @@ const copies = {
   order: Order.copy,
   user: User.copy
 } as any
+const bindDocEmitter = new TinyEmitter()
 
 onMounted(refresh)
 watch(() => route.params.mname, refresh)
@@ -396,7 +439,7 @@ function onOrderStartUse(order: Order) {
 }
 async function onSchChamberClear() {
   emitter.emit('search', { fkChamber: '' })
-  router.push(`/${project.name}/model/order`).then(refresh)
+  router.push('/model/order').then(refresh)
 }
 function onOrderCancel(order: Order) {
   updateOrderStatus(order.key, '已失效', '确定失效该订单？')
@@ -428,6 +471,20 @@ function onOrderBefSave(order: Order) {
 }
 function onExport(expParams: BchEpt) {
   console.log(expParams)
+}
+async function onBindDocSubmit({ docId }: { docId: number }, next: Function) {
+  const { payload } = await lgnAPI.verify()
+  await api.update('user', payload.sub, { policeId: docId })
+  next()
+  await refresh()
+}
+async function onBindDocShow(show: boolean) {
+  if (show) {
+    const chambers = (await api.all('chamber', { copy: Chamber.copy })) as Chamber[]
+    bindDocEmitter.emit('update:mprop', {
+      'docId.options': chambers.map(chamber => ({ label: chamber.name, value: chamber.key }))
+    })
+  }
 }
 </script>
 

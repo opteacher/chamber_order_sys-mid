@@ -4,6 +4,7 @@ export default class User {
   key: number
   name: string
   policeId: string
+  docName: string
   phone: string
   role: string
   unit: string
@@ -12,6 +13,7 @@ export default class User {
     this.key = 0
     this.name = ''
     this.policeId = ''
+    this.docName = ''
     this.phone = ''
     this.role = ''
     this.unit = ''
@@ -20,6 +22,7 @@ export default class User {
     this.key = 0
     this.name = ''
     this.policeId = ''
+    this.docName = ''
     this.phone = ''
     this.role = ''
     this.unit = ''

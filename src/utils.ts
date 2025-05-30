@@ -114,3 +114,13 @@ export async function getSysConf() {
 }
 
 export const dateFmt = 'YYYY-M-D'
+
+export function fmtDuration(duration: number) {
+  console.log(typeof duration)
+  return [fmtTimepoint(duration), fmtTimepoint(duration + 0.5)].join(' - ')
+}
+
+export function fmtTimepoint(timepoint: number) {
+  const hour = Math.floor(timepoint).toString()
+  return hour + (Math.floor(timepoint) !== timepoint ? ':30' : ':00')
+}
